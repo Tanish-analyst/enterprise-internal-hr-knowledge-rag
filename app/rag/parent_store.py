@@ -2,7 +2,7 @@ import json
 import os
 from typing import Dict, Any
 
-PARENT_CHUNKS_FILE = "parent_chunks.jsonl"
+PARENT_CHUNKS_FILE = "data/parent_chunks.jsonl"
 parent_store: Dict[str, Dict[str, Any]] = {}
 
 if os.path.exists(PARENT_CHUNKS_FILE):
