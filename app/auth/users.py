@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from typing import Dict, Any
 
-USERS_XLSX = "users.xlsx"
+USERS_XLSX = "data/users.xlsx"
 users_db: Dict[str, Dict[str, Any]] = {}
 
 if os.path.exists(USERS_XLSX):
