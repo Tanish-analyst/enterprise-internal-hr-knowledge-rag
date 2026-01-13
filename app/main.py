@@ -3,6 +3,9 @@ from fastapi import FastAPI
 from app.auth.routes import router as auth_router
 from app.rag.routes import router as rag_router
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = FastAPI(title="Multi-RAG HR Assistant (Secure)")
 
 @app.get("/")
