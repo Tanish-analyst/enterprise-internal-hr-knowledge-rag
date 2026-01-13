@@ -6,7 +6,7 @@ from pinecone import Pinecone
 from pinecone_text.sparse import BM25Encoder
 from langchain_groq import ChatGroq
 
-from core.config import (
+from app.core.config import (
     OPENAI_API_KEY,
     PINECONE_API_KEY,
     COHERE_API_KEY,
