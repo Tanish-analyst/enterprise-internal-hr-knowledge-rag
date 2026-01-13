@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from models.query import Query
-from core.security import get_current_user
-from rag.clients import openai_client, pinecone_index, bm25, co, groq_llm
-from rag.parent_store import parent_store
+from app.models.query import Query
+from app.core.security import get_current_user
+from app.rag.clients import openai_client, pinecone_index, bm25, co, groq_llm
+from app.rag.parent_store import parent_store
 
 from langchain_core.messages import SystemMessage, HumanMessage
 
