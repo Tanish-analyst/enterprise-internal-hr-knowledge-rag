@@ -6,8 +6,8 @@ from jose import jwt, JWTError
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from auth.users import users_db
+from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.auth.users import users_db
 
 pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 token_auth_scheme = HTTPBearer()
