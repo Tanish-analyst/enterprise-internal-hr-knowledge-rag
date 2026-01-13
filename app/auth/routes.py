@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 
-from auth.models import LoginRequest, TokenResponse
-from auth.users import users_db
-from core.security import verify_password, create_access_token, get_current_user
+from app.auth.models import LoginRequest, TokenResponse
+from app.auth.users import users_db
+from app.core.security import verify_password, create_access_token, get_current_user
 
 router = APIRouter()
 
