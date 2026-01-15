@@ -9,9 +9,17 @@ from app.cache.semantic_cache import (
     semantic_cache_lookup,
     store_semantic_cache
 )
+
+from app.cache.memory import (
+    build_memory_context,
+    store_turn,
+    maybe_summarize
+)
+
 from langchain_core.messages import SystemMessage, HumanMessage
 
 router = APIRouter()
+
 
 @router.post("/ask")
 def ask_bot(payload: Query, current_user=Depends(get_current_user)):
@@ -20,6 +28,8 @@ def ask_bot(payload: Query, current_user=Depends(get_current_user)):
 
     role = current_user["role"]
     question = payload.question
+
+    session_id = current_user["user_id"]
 
     q_resp = openai_client.embeddings.create(
         model="text-embedding-3-small",
@@ -50,6 +60,7 @@ def ask_bot(payload: Query, current_user=Depends(get_current_user)):
         args["sparse_vector"] = query_sparse
 
     results = pinecone_index.query(**args)
+
 
     WEIGHTS = {"allowed": 1, "forbidden": -100}
     allowed = []
@@ -85,17 +96,41 @@ def ask_bot(payload: Query, current_user=Depends(get_current_user)):
     for c in top_children:
         parent = parent_store.get(c["metadata"].get("parent_id"))
         parent_text = parent["text"] if parent else "(parent text not found)"
-        context += f"[PARENT]\n{parent_text}\n\n[CHILD]\n{c['chunk']}\n\n---\n"
+        context += (
+            f"[PARENT]\n{parent_text}\n\n"
+            f"[CHILD]\n{c['chunk']}\n\n---\n"
+        )
+
+    memory_messages = build_memory_context(session_id)
 
     if not groq_llm:
-        return {"answer": "Context returned. Set GROQ_API_KEY.", "context": context}
+        return {
+            "answer": "Context returned. Set GROQ_API_KEY.",
+            "context": context
+        }
 
-    messages = [
-        SystemMessage(content="You are an HR compliance assistant. Only answer using the provided context."),
-        HumanMessage(content=f"Context:\n{context}\n\nQuestion: {question}")
-    ]
+    messages = (
+        memory_messages
+        + [
+            SystemMessage(
+                content="You are an HR compliance assistant. "
+                        "Only answer using the provided context. "
+                        "If the answer is not present, say you don't know."
+            ),
+            HumanMessage(
+                content=f"Context:\n{context}\n\nQuestion: {question}"
+            )
+        ]
+    )
 
     answer = groq_llm.invoke(messages).content
+
+    store_turn(
+        session_id,
+        {"user": question, "assistant": answer}
+    )
+    maybe_summarize(session_id, groq_llm)
+
     store_semantic_cache(
         role=role,
         question=question,
