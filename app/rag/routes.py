@@ -5,6 +5,10 @@ from app.core.security import get_current_user
 from app.rag.clients import openai_client, pinecone_index, bm25, co, groq_llm
 from app.rag.parent_store import parent_store
 
+from app.cache.semantic_cache import (
+    semantic_cache_lookup,
+    store_semantic_cache
+)
 from langchain_core.messages import SystemMessage, HumanMessage
 
 router = APIRouter()
@@ -22,6 +26,15 @@ def ask_bot(payload: Query, current_user=Depends(get_current_user)):
         input=question
     )
     query_embedding = q_resp.data[0].embedding
+
+    cached_answer, similarity = semantic_cache_lookup(role, query_embedding)
+
+    if cached_answer:
+        return {
+            "answer": cached_answer["answer"],
+            "cached": True,
+            "similarity": similarity
+        }
 
     try:
         query_sparse = bm25.encode_queries([question])[0]
@@ -83,4 +96,18 @@ def ask_bot(payload: Query, current_user=Depends(get_current_user)):
     ]
 
     answer = groq_llm.invoke(messages).content
-    return {"answer": answer, "context_used": context}
+    store_semantic_cache(
+        role=role,
+        question=question,
+        embedding=query_embedding,
+        answer={
+            "answer": answer,
+            "context_used": context
+        }
+    )
+
+    return {
+        "answer": answer,
+        "context_used": context,
+        "cached": False
+    }
