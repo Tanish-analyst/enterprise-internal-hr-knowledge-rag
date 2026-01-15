@@ -3,7 +3,7 @@ import time
 import hashlib
 import numpy as np
 from typing import Optional, Tuple
-
+import os
 from app.cache.redis_client import redis_client
 
 SIM_THRESHOLD = float(os.getenv("SEMANTIC_CACHE_THRESHOLD", "0.6"))
