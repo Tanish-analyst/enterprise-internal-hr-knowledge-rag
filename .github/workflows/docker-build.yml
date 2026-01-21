@@ -29,3 +29,8 @@ jobs:
         run: |
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:${{ github.sha }}
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:latest
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: tanish-hr-rag-api
+          images: ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:latest
