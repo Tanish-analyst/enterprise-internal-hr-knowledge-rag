@@ -1,0 +1,49 @@
+{"role": "employee", "question": "How much monthly food allowance do junior employees receive?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Employee_Benefits_parent_0"]}
+{"role": "employee", "question": "Is meal card allowance tax exempt?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Employee_Benefits_parent_0"]}
+{"role": "employee", "question": "What is the internet reimbursement limit for work from home?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Employee_Benefits_parent_1"]}
+{"role": "employee", "question": "Does health insurance cover parents?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Employee_Benefits_parent_2"]}
+{"role": "employee", "question": "What expenses are NOT covered under LTA?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Employee_Benefits_parent_2"]}
+{"role": "employee", "question": "What medical expenses are covered under group health insurance?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_0"]}
+{"role": "employee", "question": "Does health insurance cover parents?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_0"]}
+{"role": "employee", "question": "What does group personal accident insurance cover?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_1"]}
+{"role": "employee", "question": "How much life insurance coverage do employees get?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_1"]}
+{"role": "employee", "question": "When does insurance eligibility start after joining?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_1"]}
+{"role": "employee", "question": "What is the health insurance coverage amount for employees?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_2"]}
+{"role": "employee", "question": "What are the room rent limits in health insurance?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_2"]}
+{"role": "employee", "question": "What documents are needed for reimbursement claims?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_3"]}
+{"role": "employee", "question": "How long does reimbursement processing take?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_3"]}
+{"role": "employee", "question": "What travel expenses are reimbursable?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_General_Reimbursement_Rules_Document_parent_0"]}
+{"role": "employee", "question": "Can I claim hotel and meal expenses during business travel?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_General_Reimbursement_Rules_Document_parent_0"]}
+{"role": "employee", "question": "Which personal expenses are not reimbursed?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_General_Reimbursement_Rules_Document_parent_1"]}
+{"role": "employee", "question": "What happens if I submit a claim without valid bills?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_General_Reimbursement_Rules_Document_parent_1"]}
+{"role": "employee", "question": "What is the fuel reimbursement rate per kilometer?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_General_Reimbursement_Rules_Document_parent_2"]}
+{"role": "employee", "question": "How much can I claim for local meals per day?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_General_Reimbursement_Rules_Document_parent_2"]}
+{"role": "manager", "question": "What is the annual performance bonus range?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Employee_Benefits_parent_3"]}
+{"role": "manager", "question": "When is referral bonus paid?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Employee_Benefits_parent_3"]}
+{"role": "manager", "question": "What is the certification reimbursement limit?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Employee_Benefits_parent_4"]}
+{"role": "manager", "question": "What conditions apply for course fee support?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Employee_Benefits_parent_4"]}
+{"role": "manager", "question": "What steps should an employee follow for cashless hospital claims?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_2"]}
+{"role": "manager", "question": "What is the accident insurance claim process?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_3"]}
+{"role": "manager", "question": "What responsibilities do employees have during insurance claims?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_4"]}
+{"role": "manager", "question": "Which treatments are not covered under insurance?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Insurance_parent_5"]}
+{"role": "manager", "question": "What are the steps in the reimbursement approval workflow?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_General_Reimbursement_Rules_Document_parent_3"]}
+{"role": "manager", "question": "Who must approve international travel expenses?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_General_Reimbursement_Rules_Document_parent_4"]}
+{"role": "manager", "question": "How long does it take to process domestic travel reimbursements?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_General_Reimbursement_Rules_Document_parent_4"]}
+{"role": "manager", "question": "What actions can be taken for fake reimbursement claims?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_General_Reimbursement_Rules_Document_parent_5"]}
+{"role": "manager", "question": "Which employees are eligible for overtime pay?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Payroll_Cycle_parent_1"]}
+{"role": "manager", "question": "What documents must employees submit for tax declaration?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Payroll_Cycle_parent_3"]}
+{"role": "manager", "question": "How should payroll-related issues be raised by employees?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Payroll_Cycle_parent_4"]}
+{"role": "manager", "question": "What components are included in final settlement after resignation?", "relevant_chunk_ids": ["PAYROLL_&_BENEFITS_DOCUMENT_Payroll_Cycle_parent_4"]}
+{"role": "manager", "question": "What is the purpose of the Training and Skill Development Policy?", "relevant_chunk_ids": ["EMPLOYEE_LIFECYCLE_DOCUMENT_Training_parent_0"]}
+{"role": "manager", "question": "What are the objectives of employee training and skill development programs?", "relevant_chunk_ids": ["EMPLOYEE_LIFECYCLE_DOCUMENT_Training_parent_0"]}
+{"role": "manager", "question": "What types of internal training programs are offered by the company?", "relevant_chunk_ids": ["EMPLOYEE_LIFECYCLE_DOCUMENT_Training_parent_1"]}
+{"role": "hr", "question": "What is the purpose of the Security and Confidentiality Policy?", "relevant_chunk_ids": ["COMPANY-SPECIFIC_DOCUMENT_Security_parent_0"]}
+{"role": "hr", "question": "What are the different data classification levels defined by the company?", "relevant_chunk_ids": ["COMPANY-SPECIFIC_DOCUMENT_Security_parent_0"]}
+{"role": "hr", "question": "What examples fall under confidential and highly confidential data categories?", "relevant_chunk_ids": ["COMPANY-SPECIFIC_DOCUMENT_Security_parent_0"]}
+{"role": "hr", "question": "What password requirements must employees follow to maintain system security?", "relevant_chunk_ids": ["COMPANY-SPECIFIC_DOCUMENT_Security_parent_1"]}
+{"role": "hr", "question": "Which password-related activities are strictly prohibited under the security policy?", "relevant_chunk_ids": ["COMPANY-SPECIFIC_DOCUMENT_Security_parent_1"]}
+{"role": "hr", "question": "When is multi-factor authentication mandatory for employees?", "relevant_chunk_ids": ["COMPANY-SPECIFIC_DOCUMENT_Security_parent_1"]}
+{"role": "hr", "question": "What are the acceptable and prohibited email usage practices defined in the policy?", "relevant_chunk_ids": ["COMPANY-SPECIFIC_DOCUMENT_Security_parent_1", "COMPANY-SPECIFIC_DOCUMENT_Security_parent_2"]}
+{"role": "hr", "question": "What actions should employees take to prevent phishing and malware attacks?", "relevant_chunk_ids": ["COMPANY-SPECIFIC_DOCUMENT_Security_parent_1"]}
+{"role": "hr", "question": "When is the use of a company-approved VPN mandatory?", "relevant_chunk_ids": ["COMPANY-SPECIFIC_DOCUMENT_Security_parent_2"]}
+{"role": "hr", "question": "What rules and restrictions apply to VPN usage?", "relevant_chunk_ids": ["COMPANY-SPECIFIC_DOCUMENT_Security_parent_2"]}
