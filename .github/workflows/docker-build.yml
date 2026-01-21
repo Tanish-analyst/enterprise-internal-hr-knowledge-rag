@@ -1,4 +1,4 @@
-name: Build and Push Docker Image to ACR
+name: Build and Deploy Docker Image to Azure App Service
 
 on:
   push:
@@ -6,12 +6,22 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+
 
       - name: Login to Azure Container Registry
         run: |
@@ -22,15 +32,14 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:${{ github.sha }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:latest .
-      
-      - name: Push Docker images
+
+      - name: Push Docker image
         run: |
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:${{ github.sha }}
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:latest
+
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
-          app-name: tanish-hr-rag-api
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           images: ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:latest
