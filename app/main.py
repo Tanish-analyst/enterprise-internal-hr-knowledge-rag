@@ -10,7 +10,7 @@ app = FastAPI(title="Multi-RAG HR Assistant (Secure)")
 
 @app.get("/")
 def root():
-    return {"status": "Multi-RAG HR Assistant (FastAPI) - secure"}
+    return {"status": "Multi-RAG HR Assistant (FastAPI)"}
 
 app.include_router(auth_router)
 app.include_router(rag_router)
