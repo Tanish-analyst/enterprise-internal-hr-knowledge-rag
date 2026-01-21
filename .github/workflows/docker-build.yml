@@ -26,14 +26,14 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:latest .
-
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:${{ github.sha }} .
+      
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:latest
-
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:${{ github.sha }}
+      
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          images: ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:latest
+          images: ${{ secrets.ACR_LOGIN_SERVER }}/hr-rag:${{ github.sha }}
