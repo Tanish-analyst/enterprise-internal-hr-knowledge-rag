@@ -1,1 +1,1 @@
-ok
+![System Context Diagram](./diagrams/system_context.png)
