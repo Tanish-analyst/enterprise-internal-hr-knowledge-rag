@@ -6,7 +6,7 @@
 ## 📑 Table of Contents
 
 1. [Introduction](#1-introduction)  
-2. [Module-Level Design](#2-module-Level-design)  
+2. [Module-Level Design](#2-Module-Level-Design)  
 3. [Data Models & Schemas](#3-data-models--schemas)  
 4. [End-to-End Request Flow](#4-end-to-end-request-flow)  
 5. [Caching Strategy – Low-Level Design](#6-caching-strategy--low-level-design)  
@@ -101,9 +101,9 @@ This document is primarily intended for:
 - UI/UX design  
 - Business rules and HR policies  
 - Organizational workflows  
-- Raw document ingestion pipelines  
-
-# 2-module-Level-design
+- Raw document ingestion pipelines
+- 
+## 2-Module-Level-Design
 
 ## 2.1 Application Entry Module
 
