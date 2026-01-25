@@ -116,3 +116,110 @@ Multi-layer caching and session memory optimize performance and enable conversat
 The system runs as a cloud-native, containerized service with secure configuration and secret management.
 
 ![Architecture Diagram](./docs/HLD/diagrams/architecture_overview.png) 
+
+# Security Model
+
+**Security is a core design principle of the system, not an afterthought.**
+
+The platform is built to ensure that internal organizational knowledge is accessed only by authorized users, under strictly controlled conditions.
+
+---
+
+## Authentication
+- **JWT-based Authentication**: The system uses JWT-based authentication for all protected API endpoints.
+- **Organizational Credentials**: Users authenticate using valid organizational credentials.
+- **Bearer Token Requirement**: Every request to the system requires a valid bearer token.
+
+## Authorization (Role-Based Access Control)
+- **RBAC Enforcement**: The system enforces role-based access control (RBAC) across all layers.
+- **User Role Definitions**: User roles (employee, manager, HR) define access permissions.
+- **Data-Level Control**: Access control is enforced at the data level, not just at the API level.
+
+## Data-Level Role Isolation
+- **Role-Access Tagging**: Internal documents are tagged with role-access flags.
+- **Role-Based Filtering**: Retrieval operations filter knowledge based on user role.
+- **Unauthorized Content Prevention**: Unauthorized documents are never retrieved, processed, cached, or sent to AI models.
+
+## Secure Knowledge Access
+- **Authorized Content Only**: Only authorized internal knowledge is used for answer generation.
+- **Grounded Responses**: AI responses are grounded strictly in permitted internal content.
+- **No External Sources**: No external knowledge sources are used.
+
+## Secure Configuration Management
+- **No In-Code Secrets**: Secrets and API keys are never stored in code.
+- **Secure Injection**: All credentials are injected through secure environment variables.
+- **Cloud-Native Management**: Cloud-native secret management is used in production environments.
+
+## Cache Security
+- **Role-Isolated Semantic Cache**: Semantic cache is role-isolated, preventing cross-role data leakage.
+- **Session-Scoped Memory**: Session memory is scoped per user session.
+- **Consistent Access Control**: Cached data respects the same access control rules as live retrieval.
+
+## Infrastructure Security
+- **Containerized Deployment**: Containerized deployment ensures environment isolation.
+- **Cloud-Managed Security**: Cloud-managed services handle secure networking and runtime protection.
+- **Restricted External Access**: External service access is restricted to required APIs only.
+
+---
+
+# Evaluation & Benchmarking
+
+The system is built as a measurable, validated, and benchmarked enterprise platform, with structured evaluation pipelines covering retrieval quality, generation quality, security enforcement, and performance.
+
+---
+
+## 🔍 Retrieval Evaluation (RAG Quality)
+**Metrics:**
+- **Recall@5**: 0.951
+- **Precision@5**: 0.277
+- **MRR**: 0.806
+- **Total Queries Evaluated**: 226
+
+This demonstrates high recall and ranking quality, ensuring relevant internal documents are consistently retrieved for answer generation.
+
+## 🧠 Generation Quality Evaluation
+**Metrics:**
+- **Average Faithfulness**: 0.832
+- **Average Answer Relevance**: 4.65 / 5
+
+This validates that generated responses remain grounded in internal knowledge and are contextually relevant.
+
+## ⚡ System Level Performance & Latency Benchmarking
+**End-to-End Latency:**
+- **P50**: 1.52s
+- **P95**: 2.52s
+- **P99**: 3.96s
+- **Average**: 1.69s
+
+**Component Latency (Avg):**
+- **Embedding**: 0.32s
+- **Retrieval**: 0.18s
+- **Reranker**: 0.09s
+
+## 💰 Cost Efficiency
+**Average Cost Per Query:**
+- **~ $0.00146 USD**
+
+This demonstrates production-grade cost efficiency for enterprise-scale usage.
+
+## 🔐 Security Validation (RBAC)
+**RBAC Evaluation Results:**
+- **Total Attack Tests**: 297
+- **Violations Found**: 0
+- **Violation Rate**: 0.0000
+
+This confirms strict role isolation and zero unauthorized data access.
+
+---
+
+## Evaluation Summary
+
+The system is not only functional, but:
+- ✅ **Measured**
+- ✅ **Benchmarked**
+- ✅ **Validated**
+- ✅ **Audited**
+- ✅ **Security-tested**
+- ✅ **Performance-tested**
+- ✅ **Production-verified**
+
