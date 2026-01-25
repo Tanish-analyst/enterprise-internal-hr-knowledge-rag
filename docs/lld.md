@@ -594,31 +594,31 @@ Returns only the generated answer when metrics are not requested.
 
 **Extended Response (`/ask_with_metrics`)**
 
-```json
-{
-  "answer": "string",
-  "latency": {
-    "total": number,
-    "embedding": number,
-    "retrieval": number,
-    "reranker": number,
-    "llm": number
-  },
-  "usage": {
-    "embedding_tokens": number,
-    "llm_input_tokens": number,
-    "llm_output_tokens": number,
-    "reranker_calls": number
-  },
-  "cache": {
-    "semantic_cache_hit": boolean
-  }
-}
+    ```json
+    {
+      "answer": "string",
+      "latency": {
+        "total": number,
+        "embedding": number,
+        "retrieval": number,
+        "reranker": number,
+        "llm": number
+      },
+      "usage": {
+        "embedding_tokens": number,
+        "llm_input_tokens": number,
+        "llm_output_tokens": number,
+        "reranker_calls": number
+      },
+      "cache": {
+        "semantic_cache_hit": boolean
+      }
+    }
+    ```
 
 **Explanation:**
 
 This structure provides:
-
 - AI-generated answer
 - Detailed latency breakdown
 - Token usage information
@@ -632,7 +632,7 @@ This is used for evaluation and performance analysis.
 
 **Internal User Object**
 
-
+```json
 {
   "user_id": "number | string",
   "email": "string",
@@ -640,6 +640,7 @@ This is used for evaluation and performance analysis.
   "role": "string",
   "status": "string"
 }
+```
 
 **Explanation:**
 This structure represents users loaded from users.xlsx and stored in memory.
@@ -651,15 +652,122 @@ Each vector stored in Pinecone represents a child chunk of a document.
 
 **Structure Example:**
 
-```json
-child_chunk = {
+child_chunk =
+```json 
+{
   "id": "string",
   "child_id": "string",
   "text": "string",
   "parent_id": "string",
   "category": "string",
   "source": "string",
-  "employee": boolean,
-  "hr": boolean,
-  "manager": boolean
+  "employee": "boolean",
+  "hr": "boolean",
+  "manager": "boolean"
 }
+```
+
+### 3.5.2 Role-Based Filtering (RBAC at Retrieval Level)
+
+
+Role-based filtering is applied **directly at Pinecone query time**.
+
+
+#### Filter Logic (from code)
+
+
+```python
+filter = {
+role: {"$eq": True}
+}
+
+Where:
+
+- `role ∈ { "employee", "hr", "manager" }`
+```
+#### Meaning
+
+- If user role = **"hr"** → only chunks with `hr: true` are retrieved  
+- If user role = **"employee"** → only chunks with `employee: true` are retrieved  
+- If user role = **"manager"** → only chunks with `manager: true` are retrieved
+
+### Explanation
+
+This means:
+
+- Unauthorized chunks are **never retrieved**
+- Unauthorized data **never enters the pipeline**
+- Unauthorized content is **never cached**
+- Unauthorized content is **never passed to the LLM**
+
+This enforces **hard RBAC at the data layer**, not just the API layer.
+
+### 3.5.3 Parent Document Structure (Parent Store)
+
+Parent documents are stored locally and referenced using `parent_id`.
+
+#### Parent Store Structure
+
+```python
+parent_store[parent_id] = {
+    "id": string,
+    "text": string,
+    "metadata": {
+        "source": string,
+        "category": string,
+        "employee": boolean,
+        "hr": boolean,
+        "manager": boolean,
+        "parent_id": string
+    }
+}
+```
+
+### 3.5.4 Parent–Child Linking Model
+
+#### Relationship
+
+- **Child chunk** → `parent_id` → **Parent document**
+
+#### Flow
+
+1. Pinecone returns **child chunks**
+2. Each chunk contains a `parent_id`
+3. System queries `parent_store[parent_id]`
+4. Parent text is fetched
+5. Context is constructed using:
+   - Parent text
+   - Child chunk text.
+## Where Role Filtering Happens (LLD Explanation)
+
+Role filtering is applied at **three levels** in the system to ensure strict access control and data isolation.
+
+---
+
+### 1) Retrieval Level (Pinecone)
+
+**Filter Configuration:**
+```python
+filter = { role: { "$eq": True } }
+```
+
+### Behavior
+
+- Only authorized chunks are retrieved  
+- Unauthorized documents are never returned from the vector store  
+
+---
+
+### 2) Cache Level (Semantic Cache)
+```text
+semantic_cache:{role}:*
+```
+➡ Cache is **role-isolated**  
+➡ HR cache ≠ Employee cache ≠ Manager cache
+
+#### 3) Pipeline Level
+
+```python
+current_user["role"]
+```
+
