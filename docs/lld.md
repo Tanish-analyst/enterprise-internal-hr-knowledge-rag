@@ -103,28 +103,436 @@ This document is primarily intended for:
 - Organizational workflows  
 - Raw document ingestion pipelines  
 
+# Module-Level Design
 
-2. Module-Level Design
-2.1 Application Entry Module
+## 2.1 Application Entry Module
 
-File: app/main.py
+**File:** `app/main.py`
 
-Purpose
+### Purpose
+- Starts FastAPI server
+- Loads environment variables
+- Registers routes
 
-Starts FastAPI server
+### Responsibilities
+- Load `.env` using `load_dotenv()`
+- Create FastAPI app
+- Register routers:
+  - `auth_router`
+  - `rag_router`
 
-Loads environment variables
+### Code Flow
 
-Registers routes
+load_dotenv()
+→ FastAPI()
+→ define "/"
+→ include auth router
+→ include rag router
 
-Responsibilities
+### Exposed Endpoints
+- `/` → health/status
+- `/login`
+- `/me`
+- `/ask`
+- `/ask_with_metrics`
 
-Load .env using load_dotenv()
+---
 
-Create FastAPI application
+## 2.2 Configuration Module
 
-Register routers:
+**File:** `app/core/config.py`
 
-auth_router
+### Purpose
+Central config + secrets management
 
-rag_router
+### Responsibilities
+- Load API keys
+- Load secrets
+- Load thresholds
+- Load system parameters
+
+### Data Loaded
+
+#### Auth:
+- `SECRET_KEY`
+- `ALGORITHM`
+- `ACCESS_TOKEN_EXPIRE_MINUTES`
+
+#### LLM / AI:
+- `OPENAI_API_KEY`
+- `GROQ_API_KEY`
+- `COHERE_API_KEY`
+
+#### Vector DB:
+- `PINECONE_API_KEY`
+- `PINECONE_INDEX_NAME`
+
+#### Cache:
+- `REDIS_HOST`
+- `REDIS_PORT`
+- `REDIS_USERNAME`
+- `REDIS_PASSWORD`
+
+#### RAG:
+- `TOP_K`
+- `PINECONE_SCORE_THRESHOLD`
+- `RERANK_SCORE_THRESHOLD`
+
+#### Semantic Cache:
+- `SEMANTIC_CACHE_THRESHOLD`
+- `SEMANTIC_CACHE_TTL`
+
+### Source of Secrets
+Azure App Service Environment Variables  
+*(Not .env in production)*
+
+---
+
+## 2.3 Authentication & Authorization Module
+
+**Files:**
+- `app/auth/models.py`
+- `app/auth/routes.py`
+- `app/auth/users.py`
+- `app/core/security.py`
+
+### Purpose
+This module controls who can access the system and what they are allowed to access.
+
+### User Management
+Users are loaded from an internal dataset (`users.xlsx`) into memory at startup.  
+Each user contains:
+- User ID
+- Email
+- Hashed password
+- Role (`employee`, `hr`, `manager`)
+- Status (`active` / `inactive`)
+
+This acts as an internal user directory for authentication.
+
+### Authentication Flow
+1. User sends email and password to `/login`
+2. System verifies:
+   - User exists
+   - User is active
+   - Password hash matches
+3. A JWT token is generated containing:
+   - `user_id`
+   - `email`
+   - `role`
+4. Token is returned to the client
+
+### Authorization Flow
+For every protected request:
+1. JWT token is extracted from the request
+2. Token is validated
+3. User identity and role are extracted
+4. Role information is passed into the RAG pipeline
+5. Role is used for:
+   - Data filtering
+   - Cache isolation
+   - Access control
+
+---
+
+## 2.4 RAG API Module
+
+**File:** `app/rag/routes.py`
+
+### Purpose
+This module acts as the core execution engine of the system.  
+It connects authentication, retrieval, caching, memory, and LLM generation into one pipeline.
+
+### API Endpoints
+- `/ask` → returns only the answer
+- `/ask_with_metrics` → returns answer + latency + usage + cache info
+
+**Query:**
+{
+  "question": "str"
+}
+
+**Response Format:**
+- `/ask` → returns just the `"answer"`
+- `/ask_with_metrics` → returns:
+  - `answer`
+  - `latency`
+  - `token usage`
+  - `cache info`
+
+## How the RAG Pipeline Works
+
+1. **User request is received**
+2. **User identity and role are extracted**
+3. **Question embedding is generated**
+4. **Semantic cache is checked**
+5. **If hit → answer returned directly**
+6. **Vector search is performed in Pinecone**
+7. **Sparse search (BM25) is applied**
+8. **Role-based filtering is enforced**
+9. **Results are reranked using Cohere**
+10. **Parent documents are reconstructed**
+11. **Context is built**
+12. **Conversation memory is added**
+13. **LLM is invoked**
+14. **Answer is generated**
+15. **Cache is updated**
+16. **Memory is updated**
+17. **Response is returned**
+
+---
+
+## 2.5 LLM & Embedding Client Module
+
+**File:** `app/rag/clients.py`
+
+### Purpose
+This module manages all external AI service connections.
+
+### Services Handled
+- **OpenAI** → embeddings
+- **Pinecone** → vector database
+- **BM25** → sparse retrieval
+- **Cohere** → reranking
+- **Groq** → LLM inference
+
+### How It Works
+- API keys are loaded from config
+- Clients are initialized once
+- Shared across the system
+- Abstracted away from business logic
+
+### Why This Design
+- **Centralized API management**
+- **Easy service replacement**
+- **Clean separation of infrastructure and logic**
+- **Supports multi-provider architecture**
+
+---
+
+## 2.6 Document Storage & Retrieval Module
+
+**File:** `app/rag/parent_store.py`
+
+### Purpose
+This module manages parent document reconstruction.
+
+### How Data is Structured
+- Child chunks are stored in Pinecone
+- Each child chunk contains a `parent_id`
+- Parent documents are stored locally
+- Parent store maps `parent_id` → full document
+
+### How It Works
+1. **Retrieval returns child chunks**
+2. **Each chunk references a parent document**
+3. **Parent text is fetched using `parent_id`**
+4. **Full context is reconstructed using:**
+   - Parent text
+   - Child chunk text
+## 2.7 Caching Module
+
+### A. Conversation Memory Cache
+
+**File:** `app/cache/memory.py`
+
+#### Purpose
+To maintain conversation context within a user session.
+
+#### How It Works
+Each user session stores:
+
+1. **Recent raw conversation turns:**  
+   `chat:{session_id}:turns` stores recent raw conversation turns (user question + AI response).
+
+2. **A summarized long-term memory:**  
+   `chat:{session_id}:summary` stores a compressed long-term summary of older conversation history.
+
+#### Flow:
+1. Every interaction is stored
+2. When conversation grows:
+   - Older turns are summarized
+   - Summary is stored
+   - Raw history is trimmed
+3. Memory is injected into the LLM prompt
+
+#### Design Benefits
+- **Maintains context**
+- **Controls token usage**
+- **Prevents memory overflow**
+- **Supports multi-turn conversations**
+- **Auto-cleanup using TTL**
+
+---
+
+### B. Semantic Cache
+
+**File:** `app/cache/semantic_cache.py`
+
+#### Purpose
+To avoid recomputation for similar questions.
+
+**Key Format:** `semantic_cache:{role}:{hash(question)}`
+
+#### Role-Based Cache Separation:
+- **employee cache**
+- **hr cache**
+- **manager cache**
+
+#### How It Works
+1. Each question embedding is stored with its answer
+2. New queries are compared using cosine similarity
+3. If similarity exceeds threshold:
+   - Cached answer is returned
+   - Retrieval is skipped
+   - Reranking is skipped
+   - LLM is skipped
+
+#### Role Isolation
+Cache is separated by user role, ensuring:
+- No cross-role data leakage
+- Access control integrity
+
+#### Design Benefits
+- **Major latency reduction**
+- **Cost reduction**
+- **Load reduction**
+- **Faster user response**
+- **Safe reuse of knowledge**
+
+---
+
+### C. Redis Backend
+
+**File:** `app/cache/redis_client.py`
+
+#### Purpose
+Acts as the central caching backend.
+
+#### Behavior
+- **If Redis is available** → caching enabled
+- **If Redis is unavailable** → system runs without cache
+
+#### Why This Design
+- **Fault-tolerant architecture**
+- **No single point of failure**
+- **Graceful degradation**
+
+---
+
+## 2.8 Data Models Module
+
+**File:** `app/models/query.py`
+
+### Query Model
+{
+  "question": "str"
+}
+
+## 2.9 Evaluation & Latency Analysis Module
+
+**Directories:**
+- `eval_scripts/`
+- `eval_data/`
+- `evaluation/`
+
+### Purpose
+This module provides a formal evaluation framework to measure:
+
+- **System performance**
+- **Latency**
+- **Retrieval quality**
+- **RBAC correctness**
+- **Answer quality**
+- **Cost impact**
+
+It ensures the system is **measurable, testable, and verifiable**, not just functional.
+
+### Evaluation Architecture
+The evaluation system is separated into three layers:
+
+#### 1) Test Data Layer (`eval_data/`)
+- Stores structured evaluation datasets in `.jsonl` format
+- Each file represents a different evaluation dimension:
+  - `latency_eval.jsonl` → performance testing
+  - `retrieval_eval.jsonl` → retrieval accuracy
+  - `rbac_eval.jsonl` → role-based access correctness
+  - `generational_eval.jsonl` → answer quality
+
+This separation ensures **controlled, repeatable testing**.
+
+#### 2) Execution Layer (`eval_scripts/`)
+These scripts automate testing by calling live APIs:
+
+- `run_latency_eval.py` → Measures response time across pipeline stages
+- `run_retrieval_eval.py` → Tests quality of retrieved documents
+- `run_rbac_eval.py` → Validates role-based access control
+- `run_generation_eval.py` → Evaluates answer quality
+
+**Each script:**
+- Sends real API requests
+- Captures responses
+- Stores structured results
+- Produces measurable outputs
+
+This ensures **real-system evaluation**, not simulated testing.
+
+#### 3) Analysis Layer (`evaluation/`)
+- Jupyter notebooks process raw evaluation data:
+  - Latency breakdown
+  - Cost analysis
+  - Accuracy metrics
+  - Retrieval precision
+  - RBAC validation
+  - Generation quality
+- `metrics_summary.md` provides a consolidated evaluation report
+
+### Latency Measurement Design
+Latency is measured at multiple pipeline stages:
+
+1. **Authentication time**
+2. **Embedding generation time**
+3. **Retrieval time**
+4. **Reranking time**
+5. **LLM generation time**
+6. **Total request time**
+
+This enables **bottleneck identification** and **targeted optimization**.
+
+### Retrieval Evaluation
+Retrieval quality is evaluated by:
+
+- **Comparing expected vs retrieved documents**
+- **Measuring relevance accuracy**
+- **Validating parent–child reconstruction**
+- **Testing reranking effectiveness**
+
+This ensures that answers are based on **correct source documents**, not hallucinations.
+
+### RBAC Evaluation
+RBAC testing ensures:
+
+- **Employees** only access employee-level data
+- **Managers** only access manager-level data
+- **HR** only accesses HR-level data
+- **No cross-role leakage**
+- **Cache isolation correctness**
+
+This validates **security correctness**, not just functionality.
+
+### Generation Quality Evaluation
+Answer quality is evaluated using:
+
+- **Consistency checks**
+- **Context grounding checks**
+- **Relevance checks**
+- **Hallucination detection**
+- **Role-appropriateness validation**
+
+This ensures the LLM output is:
+
+✅ **Accurate**  
+✅ **Grounded**  
+✅ **Role-safe**  
+✅ **Context-aware**
+
