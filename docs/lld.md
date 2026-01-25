@@ -103,7 +103,7 @@ This document is primarily intended for:
 - Organizational workflows  
 - Raw document ingestion pipelines  
 
-# Module-Level Design
+# 2-module-Level-design
 
 ## 2.1 Application Entry Module
 
@@ -536,6 +536,7 @@ This ensures the LLM output is:
 ✅ **Role-safe**  
 ✅ **Context-aware**
 
+# 3-data-models--schemas
 ## 3. Data Models & Schemas
 
 This section defines the actual data structures used in the system. It documents how data is represented, stored, transferred, and processed across different modules.
