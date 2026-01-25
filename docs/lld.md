@@ -537,9 +537,7 @@ This ensures the LLM output is:
 ✅ **Role-safe**  
 ✅ **Context-aware**
 
-# 3-data-models--schemas
-## 3. Data Models & Schemas
-
+# 3. Data Models & Schemas
 This section defines the actual data structures used in the system. It documents how data is represented, stored, transferred, and processed across different modules.
 
 ### 3.1 Query Request Model
