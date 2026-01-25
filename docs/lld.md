@@ -771,3 +771,1052 @@ semantic_cache:{role}:*
 current_user["role"]
 ```
 
+➡ **Role controls:**
+
+
+- Retrieval filter
+- Cache lookup
+- Cache storage
+- Context building
+- Answer reuse
+
+# 3.7 Conversation Memory Data Structures
+
+**Source:** `app/cache/memory.py`
+
+## Raw Turn Structure
+
+```json
+{
+  "user": "string",
+  "assistant": "string",
+  "ts": "number"
+}
+```
+
+**Storage Key:**
+
+* `chat:{session_id}:turns`
+
+**Explanation:**
+
+* Stores recent conversation turns for session-level memory.
+
+---
+
+## Summary Structure
+
+```json
+{
+  "summary": "string"
+}
+```
+
+**Storage Key:**
+
+* `chat:{session_id}:summary`
+
+**Explanation:**
+
+* Stores summarized long-term memory of the conversation for context preservation.
+
+---
+
+# 3.8 Redis Connection Structure
+
+**Source:** `app/cache/redis_client.py`
+
+## Redis Client Object
+
+```python
+redis_client = Redis(
+  host,
+  port,
+  username,
+  password
+)
+```
+
+**Explanation:**
+Central Redis connection object used by:
+
+* Semantic cache
+* Conversation memory
+* TTL management
+* Session cleanup
+
+---
+
+# 3.9 Evaluation Data Structures
+
+**Source:** `eval_data/*.jsonl`
+
+## Common JSONL Structure
+
+Each line represents one evaluation case:
+
+```json
+{
+  "question": "string",
+  "expected": "string",
+  "role": "string",
+  "metadata": "object"
+}
+```
+
+**Explanation:**
+Evaluation datasets store:
+
+* Test questions
+* Expected outputs
+* Role context
+* Evaluation metadata
+
+Used by evaluation scripts and notebooks.
+
+---
+
+# 4. End-to-End Request Flow
+
+This section defines the exact execution flow of a request through the system, from API entry to response return.
+
+---
+
+## 4.1 Request Entry and Validation
+
+**Endpoints:**
+
+* `POST /ask`
+* `POST /ask_with_metrics`
+
+### Flow
+
+* HTTP request received
+* FastAPI route handler
+* Payload parsed into Query model
+* Schema validation (Pydantic)
+* Invalid request → `422`
+
+---
+
+## 4.2 Authentication and RBAC Check
+
+**Header:** `Authorization: Bearer <JWT>`
+
+### Flow
+
+* Extract JWT token
+* Verify token signature
+* Decode token
+* Extract:
+
+  * user_id
+  * email
+  * role
+* If invalid → `401`
+* If inactive → `403`
+
+---
+
+## 4.3 Session Context Resolution
+
+```text
+session_id = current_user["user_id"]
+role       = current_user["role"]
+question   = payload.question
+```
+
+---
+
+## 4.4 Embedding Generation
+
+**Service:** OpenAI Embedding API
+
+### Flow
+
+* question → embedding model
+* query_embedding vector
+* embedding_tokens
+* embedding_latency
+
+---
+
+## 4.5 Semantic Cache Lookup (Cache Hit Flow)
+
+**Function:** `semantic_cache_lookup(role, query_embedding)`
+
+### Flow
+
+* Redis scan by role
+* Cosine similarity calculation
+* Best match selection
+* Similarity threshold check
+
+### If HIT
+
+* Answer fetched
+* Skip retrieval
+* Skip reranking
+* Skip parent lookup
+* Skip LLM
+* Build response
+* Return response
+
+---
+
+## 4.6 Semantic Cache Miss Flow
+
+* `semantic_cache_lookup → MISS`
+
+---
+
+## 4.7 Vector Retrieval
+
+**Service:** Pinecone
+
+### Query Structure
+
+* `vector = query_embedding`
+* `top_k = TOP_K`
+* `filter = { role: { "$eq": true } }`
+* `sparse_vector = BM25 (if available)`
+
+### Flow
+
+* Vector search
+* Hybrid retrieval (dense + sparse)
+* Role-based filtering
+* Child chunks returned
+
+---
+
+## 4.8 Empty Retrieval Handling
+
+**Condition:** `results.matches == empty`
+
+### Flow
+
+* Return "No data found"
+* End request
+
+---
+
+## 4.9 Reranking
+
+**Service:** Cohere reranker
+
+### Flow
+
+* Retrieved chunks
+* Rerank model
+* Relevance scoring
+* Threshold filtering
+* Top ranked chunks selected
+
+---
+
+## 4.10 Parent–Child Reconstruction
+
+**Mapping:** `child_chunk.parent_id → parent_store[parent_id]`
+
+### Flow
+
+* Fetch parent document
+* Combine parent text + child text
+* Build context
+
+---
+
+## 4.11 Memory Context Injection
+
+**Function:** `build_memory_context(session_id)`
+
+### Flow
+
+* Fetch summary
+* Fetch recent turns
+* Construct message list
+* Attach to prompt
+
+---
+
+## 4.12 LLM Execution
+
+**Call:** `LLM.invoke()`
+
+### Input Structure
+
+* memory_context
+* system_prompt
+* context
+* question
+
+### Flow
+
+* LLM call
+* Response generated
+* Token usage recorded
+* Latency recorded
+
+---
+
+## 4.13 Semantic Cache Storage
+
+**Function:** `store_semantic_cache(role, question, embedding, answer)`
+
+### Flow
+
+* Create role-based cache key
+* Store embedding
+* Store answer
+* Store timestamp
+
+---
+
+## 4.14 Memory Update
+
+**Functions:**
+
+* `store_turn(session_id, turn)`
+* `maybe_summarize(session_id, llm)`
+
+### Flow
+
+* Store raw turn
+* Check summary trigger
+* Summarize old turns
+* Update summary
+* Trim old turns
+
+---
+
+## 4.15 Response Construction
+
+### Without Metrics
+
+```json
+{
+  "answer": "string"
+}
+```
+
+### With Metrics
+
+```json
+{
+  "answer": "string",
+  "latency": { },
+  "usage": { },
+  "cache": { }
+}
+```
+
+---
+
+## 4.16 Response Return
+
+* FastAPI → HTTP response → Client
+
+---
+
+# 6. Caching Strategy – Low-Level Design
+
+This section defines the caching architecture, data flow, and behavior of caching mechanisms used in the system.
+
+---
+
+## 6.1 Cache Architecture Overview
+
+The caching layer consists of:
+
+* Conversation Memory Cache
+* Semantic Cache
+* Redis Backend Layer
+
+---
+
+## 6.2 Conversation Memory Cache
+
+**File:** `app/cache/memory.py`
+
+### Purpose
+
+* Maintain short-term and long-term conversational context
+
+### Data Stored
+
+* Raw Turns → `chat:{session_id}:turns`
+* Summary   → `chat:{session_id}:summary`
+
+### Storage Model
+
+* Turns → Redis list
+* Summary → Redis string
+
+### Update Flow
+
+* User query + AI answer
+* `store_turn(session_id, turn)`
+* Turn appended to Redis list
+
+### Summarization Flow
+
+* If turns > `SUMMARY_TRIGGER`
+* Summarize using LLM
+* Update summary
+* Trim old turns
+
+### TTL Behavior
+
+* `TTL_SECONDS = 300`
+* Inactive session → auto-deleted
+
+### Design Purpose
+
+* Conversational continuity
+* Token control
+* Memory growth control
+* Multi-turn support
+* Session context
+* Automatic cleanup
+
+---
+
+## 6.3 Semantic Cache
+
+**File:** `app/cache/semantic_cache.py`
+
+### Purpose
+
+* Avoid recomputation for semantically similar queries
+
+### Cache Key
+
+* `semantic_cache:{role}:{hash(question)}`
+
+### Data Stored
+
+```json
+{
+  "role": "string",
+  "question": "string",
+  "embedding": "vector",
+  "answer": "string",
+  "ts": "number"
+}
+```
+
+### Lookup Flow
+
+* Query embedding
+* Scan keys by role
+* Cosine similarity
+* Best match
+* Threshold check
+
+### Cache Hit Behavior
+
+* Return cached answer
+* Skip retrieval
+* Skip reranking
+* Skip parent lookup
+* Skip LLM
+
+### Cache Miss Behavior
+
+* Continue RAG pipeline
+* Generate answer
+* Store in semantic cache
+
+### Role Isolation
+
+* `semantic_cache:employee:*`
+* `semantic_cache:hr:*`
+* `semantic_cache:manager:*`
+
+### Design Purpose
+
+* Latency reduction
+* Cost reduction
+* Load reduction
+* Fast responses
+* RBAC-safe reuse
+
+---
+
+## 6.4 Redis Backend Layer
+
+**File:** `app/cache/redis_client.py`
+
+### Purpose
+
+* Central cache storage engine
+
+### Behavior
+
+* Redis connected → caching enabled
+* Redis unavailable → caching disabled
+
+### Failure Handling
+
+* Redis failure → system continues without cache
+
+### Design Purpose
+
+* Fault tolerance
+* Graceful degradation
+* No single point of failure
+* System availability
+
+---
+
+## 6.5 Cache Interaction Flow
+
+```
+Request → Semantic Cache
+        → (hit) → return answer
+        → (miss) → RAG pipeline
+                      → generate answer
+                      → store semantic cache
+                      → update memory cache
+```
+
+---
+
+## 6.6 Cache Consistency Model
+
+* Conversation Memory → session-scoped
+* Semantic Cache → role-scoped
+
+---
+
+## 6.7 Cache Scope
+
+* Conversation Memory → per session
+* Semantic Cache → per role
+
+---
+
+# 7. Error Handling & Edge Cases
+
+This section defines system failure handling, exceptions, and abnormal conditions.
+
+---
+
+## 7.1 Authentication Failures
+
+### Invalid Credentials
+
+* Email not found
+* Password mismatch
+
+**Behavior:**
+
+* HTTP 401
+* Request terminated
+
+### Inactive User
+
+* status != "active"
+
+**Behavior:**
+
+* HTTP 403
+* Access denied
+
+### Invalid Token
+
+* Invalid JWT
+* Expired JWT
+* Corrupt token
+
+**Behavior:**
+
+* HTTP 401
+* Request terminated
+
+---
+
+## 7.2 Authorization Failures (RBAC)
+
+**Behavior:**
+
+* Role filter applied
+* Unauthorized chunks not retrieved
+* No data exposure
+
+If no authorized data:
+
+* Empty retrieval
+* Return "No data found"
+
+---
+
+## 7.3 Configuration Failures
+
+### Missing Clients
+
+* openai_client == None
+* pinecone_index == None
+* bm25 == None
+
+**Behavior:**
+
+* HTTP 500
+* Server not configured
+
+---
+
+## 7.4 Cache Failures
+
+### Redis Unavailable
+
+**Behavior:**
+
+* semantic cache disabled
+* memory cache disabled
+* system continues
+
+### Semantic Cache Errors
+
+**Behavior:**
+
+* lookup failure → ignore cache
+* store failure → ignore cache
+* continue pipeline
+
+---
+
+## 7.5 Retrieval Failures
+
+### Empty Retrieval
+
+**Behavior:**
+
+* Return "No data found"
+* Skip reranking
+* Skip LLM
+
+### Sparse Encoder Failure (BM25)
+
+**Behavior:**
+
+* Sparse disabled
+* Dense retrieval only
+
+---
+
+## 7.6 Reranker Failures
+
+### Cohere API Failure
+
+**Behavior:**
+
+* Fallback to top-k chunks
+* Continue pipeline
+
+---
+
+## 7.7 Parent Store Failures
+
+### Missing Parent Document
+
+**Behavior:**
+
+* parent_text = ""
+* Use child chunk only
+* Continue context
+
+---
+
+## 7.8 LLM Failures
+
+### LLM API Error
+
+**Behavior:**
+
+* HTTP 500
+* Request failed
+
+---
+
+## 7.9 Timeout Handling
+
+### External Service Timeout
+
+**Behavior:**
+
+* Exception
+* Request failed
+* Error response
+
+---
+
+## 7.10 Partial Pipeline Failures
+
+### Non-Critical Failures
+
+* Semantic cache failure
+* Memory store failure
+* Reranker failure
+
+**Behavior:**
+
+* Component bypassed
+* Pipeline continues
+* System functional
+
+---
+
+## 7.11 Graceful Degradation Model
+
+* Redis down → caching disabled
+* BM25 fails → dense only
+* Reranker fails → unranked retrieval
+* Parent missing → child-only context
+
+---
+
+## 7.12 Failure Isolation Model
+
+* Cache failure ≠ pipeline failure
+* Memory failure ≠ pipeline failure
+* Reranker failure ≠ pipeline failure
+
+Failures are isolated to individual components.
+
+# 9. Evaluation & Benchmarking
+
+This section defines how the system is tested, measured, and validated using automated evaluation pipelines and structured datasets.
+
+The evaluation framework ensures the system is measurable, verifiable, and auditable — not just functional.
+
+---
+
+## 9.1 Evaluation Architecture
+
+Evaluation is implemented as a separate subsystem with three layers:
+
+* **Test Data Layer** → `eval_data/`
+* **Execution Layer** → `eval_scripts/`
+* **Analysis Layer** → `evaluation/`
+
+---
+
+## 9.2 Test Data Layer
+
+**Directory:** `eval_data/`
+
+### Files
+
+* `generational_eval.jsonl`
+* `latency_eval.jsonl`
+* `rbac_eval.jsonl`
+* `retrieval_eval.jsonl`
+
+### Purpose
+
+* `generational_eval.jsonl` → answer quality evaluation
+* `latency_eval.jsonl` → performance evaluation
+* `rbac_eval.jsonl` → role access validation
+* `retrieval_eval.jsonl` → retrieval accuracy evaluation
+
+---
+
+## 9.3 Execution Layer
+
+**Directory:** `eval_scripts/`
+
+### Scripts
+
+* `run_generation_eval.py`
+* `run_latency_eval.py`
+* `run_rbac_eval.py`
+* `run_retrieval_eval.py`
+
+### Execution Model
+
+```text
+script → API calls → collect responses → store results
+```
+
+Each script:
+
+* Sends real requests to the FastAPI backend
+* Uses real authentication
+* Uses real RBAC
+* Uses real retrieval
+* Uses real LLM
+* Uses real cache behavior
+
+---
+
+## 9.4 Latency Evaluation
+
+### Files
+
+* `latency_eval.jsonl`
+* `run_latency_eval.py`
+* `latency_cost_eval.ipynb`
+
+### Metrics Collected
+
+* Total latency
+* Embedding latency
+* Retrieval latency
+* Reranker latency
+* LLM latency
+
+### Purpose
+
+* Identify bottlenecks
+* Measure pipeline performance
+* Compare cache hit vs cache miss
+* Measure optimization impact
+
+---
+
+## 9.5 Retrieval Evaluation
+
+### Files
+
+* `retrieval_eval.jsonl`
+* `run_retrieval_eval.py`
+* `retrieval_eval.ipynb`
+
+### Metrics
+
+* Retrieval accuracy
+* Relevance quality
+* Parent–child correctness
+* Reranking effectiveness
+
+---
+
+## 9.6 RBAC Evaluation
+
+### Files
+
+* `rbac_eval.jsonl`
+* `run_rbac_eval.py`
+* `rbac_eval.ipynb`
+
+### Validation Scope
+
+* Role-based filtering correctness
+* Unauthorized data access prevention
+* Cross-role leakage detection
+* Cache role isolation validation
+
+---
+
+## 9.7 Generation Quality Evaluation
+
+### Files
+
+* `generational_eval.jsonl`
+* `run_generation_eval.py`
+* `generation_eval.ipynb`
+
+### Evaluation Scope
+
+* Answer relevance
+* Context grounding
+* Hallucination detection
+* Role-appropriate answers
+* Consistency
+
+---
+
+## 9.8 Analysis Layer
+
+**Directory:** `evaluation/`
+
+### Files
+
+* `generation_eval.ipynb`
+* `latency_cost_eval.ipynb`
+* `rbac_eval.ipynb`
+* `retrieval_eval.ipynb`
+* `metrics_summary.md`
+
+### Role
+
+* Metrics aggregation
+* Performance analysis
+* Visualization
+* Trend analysis
+* Quality scoring
+* Benchmark reporting
+
+---
+
+## 9.9 Metrics Consolidation
+
+**File:** `metrics_summary.md`
+
+### Purpose
+
+* Central evaluation report
+* System performance summary
+* Quality metrics summary
+* Security validation summary
+* Retrieval performance summary
+
+---
+
+## 9.10 Benchmarking Model
+
+* Offline datasets
+* Automated scripts
+* Live system execution
+* Real API calls
+* Real latency measurement
+* Real cache behavior
+* Real RBAC enforcement
+
+---
+
+## 9.11 Evaluation Characteristics
+
+* Repeatable
+* Automated
+* Measurable
+* Verifiable
+* Auditable
+* Regression-test capable
+
+
+# 10. Deployment Details
+
+This section defines how the system is built, configured, deployed, and executed in production environments.
+
+It describes the deployment model, environment handling, secret management, runtime behavior, and CI/CD integration.
+
+---
+
+## 10.1 Docker Deployment
+
+**Source:** Dockerfile
+
+### Deployment Model
+
+* Application packaged as a container image
+
+### Build Process
+
+* Source code
+* Docker build
+* Dependency installation
+* FastAPI app setup
+* Runtime container image
+
+### Purpose
+
+* Environment consistency
+* Reproducible builds
+* Deployment portability
+* Platform independence
+
+---
+
+## 10.2 Azure Deployment
+
+### Platform
+
+* Azure App Service (Container-based deployment)
+
+### Deployment Model
+
+* Docker image → Azure App Service
+
+### Runtime Behavior
+
+* Container runs FastAPI service
+* External services connected at runtime
+* Stateless API execution
+
+---
+
+## 10.3 Environment Handling
+
+### Configuration Source
+
+* Azure App Service Environment Variables
+
+### Behavior
+
+* No `.env` dependency in production
+* No hardcoded secrets
+* All configs injected at runtime
+
+---
+
+## 10.4 Secret Injection
+
+### Secrets Managed
+
+* OPENAI_API_KEY
+* GROQ_API_KEY
+* COHERE_API_KEY
+* PINECONE_API_KEY
+* REDIS_HOST
+* REDIS_PORT
+* REDIS_USERNAME
+* REDIS_PASSWORD
+* SECRET_KEY
+
+### Injection Model
+
+* Azure → Environment Variables → `app/core/config.py`
+
+---
+
+## 10.5 Runtime Model
+
+### Execution Model
+
+* Single container instance
+* FastAPI synchronous execution
+* External API dependencies
+* Network-bound pipeline
+
+### Runtime Characteristics
+
+* Stateless API layer
+* State stored in Redis
+* Session memory TTL-based
+* External vector DB
+* External LLM services
+
+---
+
+## 10.6 CI/CD Workflow Overview
+
+**Source:** `.github/workflows/docker-build.yml`
+
+### Pipeline Flow
+
+* GitHub push
+* GitHub Actions trigger
+* Docker build
+* Build validation
+* Image generation
+
+### Purpose
+
+* Continuous integration
+* Build verification
+* Deployment readiness
+* Artifact generation
+
+---
+
+## 10.7 Deployment Characteristics
+
+* Containerized service
+* Cloud-native deployment
+* Externalized configuration
+* Secure secret management
+* Stateless execution
+* Scalable deployment model
