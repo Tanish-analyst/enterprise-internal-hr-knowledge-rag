@@ -10,6 +10,7 @@
 - [Security Model](#security-model)
 - [Evaluation & Benchmarking](#evaluation--benchmarking)
 - [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
 - [Running Locally](#running-locally)
 - [Deployment](#deployment)
 ## Short Description
@@ -275,7 +276,72 @@ The system is not only functional, but:
 - **Environment Variables** – Runtime configuration
 - **Cloud Secret Injection** – Secure credential management
 
+# Project Structure
 
+The repository follows a modular, enterprise-oriented structure designed for scalability, maintainability, security, and clear separation of responsibilities:
+
+<details>
+<summary><b>View Full Structure</b></summary>
+
+```plaintext
+enterprise-internal-hr-knowledge-rag-main/
+│
+├── app/                             # Core application code
+│   ├── auth/                        # Authentication & RBAC
+│   │   ├── models.py                # Auth request/response models
+│   │   ├── routes.py                # Login and auth APIs
+│   │   └── users.py                 # User loading & RBAC data
+│   │
+│   ├── rag/                         # RAG pipeline & retrieval logic
+│   │   ├── routes.py                # /ask and /ask_with_metrics APIs
+│   │   ├── clients.py               # LLM, embeddings, retriever clients
+│   │   └── parent_store.py          # Parent document storage
+│   │
+│   ├── cache/                       # Caching & memory layer
+│   │   ├── memory.py                # Conversation memory & summarization
+│   │   ├── semantic_cache.py        # Semantic caching logic
+│   │   └── redis_client.py          # Redis connection handler
+│   │
+│   ├── core/                        # Core system services
+│   │   ├── config.py                # Environment & secrets configuration
+│   │   └── security.py              # JWT auth & security utilities
+│   │
+│   └── models/                      # Shared data models
+│       └── query.py                 # Query request model
+│
+├── data/                            # Runtime system data
+│   ├── users.xlsx                   # Internal user database
+│   └── parent_chunks.jsonl          # Parent document store
+│
+├── eval_data/                       # Evaluation datasets
+│   ├── generational_eval.jsonl
+│   ├── latency_eval.jsonl
+│   ├── retrieval_eval.jsonl
+│   └── rbac_eval.jsonl
+│
+├── eval_scripts/                    # Evaluation execution scripts
+│   ├── run_generation_eval.py
+│   ├── run_latency_eval.py
+│   ├── run_retrieval_eval.py
+│   └── run_rbac_eval.py
+│
+├── evaluation/                      # Analysis, notebooks & reports
+│   ├── generation_eval.ipynb
+│   ├── latency_cost_eval.ipynb
+│   ├── retrieval_eval.ipynb
+│   ├── rbac_eval.ipynb
+│   └── metrics_summary.md
+│
+├── .github/workflows/               # CI/CD pipelines
+│   └── docker-build.yml
+│
+├── Dockerfile                       # Container build configuration
+├── .dockerignore                    # Docker build exclusions
+├── .gitignore                       # Git version control exclusions
+├── requirements.txt                 # Python dependencies
+├── main.py                          # Application entry point
+└── README.md                        # Project documentation
+```
 # Running Locally
 
 This section explains how to run the system in a local development environment for testing, development, and evaluation.
@@ -381,7 +447,4 @@ The system is designed for production-grade deployment using a containerized, cl
 - External AI services
 - External vector database
 - External cache backend
-
-
-
 
