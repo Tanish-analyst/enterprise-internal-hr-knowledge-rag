@@ -52,7 +52,7 @@ Optimized for **low latency** using semantic caching.
 - Latency monitoring (P50, P95, P99)
 
 ### System Context Diagram
-![System Context Diagram](./diagrams/context.png)
+![System Context Diagram](./diagrams/system_context.png)
 
 ---
 
