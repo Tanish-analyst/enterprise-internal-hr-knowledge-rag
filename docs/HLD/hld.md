@@ -62,7 +62,7 @@ Optimized for **low latency** using semantic caching.
 The system follows a layered service architecture with clear separation across API, security, retrieval, and LLM layers.
 
 ### High-Level Flow
-
+Client → API → Auth → Cache → Retrieval → LLM → Response
 
 ### Core Architectural Layers
 
@@ -167,7 +167,7 @@ End-to-end request processing flow:
     - Memory updated
 
 ### Data Flow Diagram
-> (Insert data flow diagram here)
+![Data Flow](./diagrams/data_flow.png)
 
 ---
 
@@ -198,7 +198,7 @@ Containerized cloud-native deployment on **Microsoft Azure** using **Docker**.
 - Production-grade hosting
 
 ### Deployment Diagram
-> (Insert deployment diagram here)
+![Deployment architecture](./diagrams/deployment_architecture.png)
 
 ---
 
@@ -230,7 +230,7 @@ Fully automated CI/CD pipeline using **GitHub Actions**.
 - Environment parity
 
 ### CI/CD Diagram
-> (Insert CI/CD diagram here)
+![CI_CD](./diagrams/ci_cd.png)
 
 ---
 
@@ -270,7 +270,7 @@ Multi-layered security ensuring authentication, authorization, and secrets manag
 - Cloud-native security controls
 
 ### Security Diagram
-> (Insert security diagram here)
+![security](./diagrams/security_flow.png)
 
 ---
 
@@ -306,7 +306,7 @@ Running as a single instance on Azure App Service (student subscription) with au
 - No code changes required
 
 ### Scalability Diagram
-> (Insert scalability diagram here)
+![Scalability](./diagrams/scalability.png)
 
 ---
 
@@ -336,4 +336,4 @@ Using **Azure Monitor** for:
 - Container health
 
 ### Observability Diagram
-> (Insert observability diagram here)
+![Observability](./diagrams/observability.png)
