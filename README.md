@@ -280,9 +280,6 @@ The system is not only functional, but:
 
 The repository follows a modular, enterprise-oriented structure designed for scalability, maintainability, security, and clear separation of responsibilities:
 
-<details>
-<summary><b>View Full Structure</b></summary>
-
 ```plaintext
 enterprise-internal-hr-knowledge-rag-main/
 │
@@ -342,6 +339,7 @@ enterprise-internal-hr-knowledge-rag-main/
 ├── main.py                          # Application entry point
 └── README.md                        # Project documentation
 ```
+
 # Running Locally
 
 This section explains how to run the system in a local development environment for testing, development, and evaluation.
