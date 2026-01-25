@@ -8,6 +8,20 @@
 
 ---
 
+## Table of Contents
+
+- [Internal HR Knowledge RAG System](#internal-hr-knowledge-rag-system)
+- [High-Level Design (HLD)](#high-level-design-hld)
+- [1. System Overview](#1-system-overview)
+- [2. Architecture Overview](#2-architecture-overview)
+- [3. Data Flow](#3-data-flow)
+- [4. Deployment Architecture](#4-deployment-architecture)
+- [5. CI/CD Architecture](#5-cicd-architecture)
+- [6. Security Architecture](#6-security-architecture)
+- [7. Scalability Architecture](#7-scalability-architecture)
+- [8. Observability](#8-observability)
+
+  
 ## 1. System Overview
 
 ### Purpose
