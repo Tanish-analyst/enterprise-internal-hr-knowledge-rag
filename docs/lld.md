@@ -103,3 +103,28 @@ This document is primarily intended for:
 - Organizational workflows  
 - Raw document ingestion pipelines  
 
+
+2. Module-Level Design
+2.1 Application Entry Module
+
+File: app/main.py
+
+Purpose
+
+Starts FastAPI server
+
+Loads environment variables
+
+Registers routes
+
+Responsibilities
+
+Load .env using load_dotenv()
+
+Create FastAPI application
+
+Register routers:
+
+auth_router
+
+rag_router
