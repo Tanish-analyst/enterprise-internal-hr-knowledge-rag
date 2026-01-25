@@ -1,6 +1,17 @@
 # SentinelRAG
 **Enterprise-Grade Secure Knowledge Intelligence Platform**
 
+## Table of Contents
+- [Short Description](#short-description)
+- [Problem Statement](#problem-statement)
+- [Solution Overview](#solution-overview)
+- [Key Capabilities](#key-capabilities)
+- [System Architecture (High-Level)](#system-architecture-high-level)
+- [Security Model](#security-model)
+- [Evaluation & Benchmarking](#evaluation--benchmarking)
+- [Tech Stack](#tech-stack)
+- [Running Locally](#running-locally)
+- [Deployment](#deployment)
 ## Short Description
 A production-grade, secure, role-based Retrieval-Augmented Generation (RAG) platform for internal enterprise knowledge systems. Features include RBAC enforcement, semantic caching, parent–child document retrieval, evaluation pipelines, and cloud-native deployment on Azure.
 
@@ -222,4 +233,155 @@ The system is not only functional, but:
 - ✅ **Security-tested**
 - ✅ **Performance-tested**
 - ✅ **Production-verified**
+
+
+# Tech Stack
+
+## Backend & API
+- **Python** – Core programming language
+- **FastAPI** – Secure, high-performance API framework
+- **Uvicorn** – ASGI server for production execution
+
+## AI & Machine Learning
+- **OpenAI** – Embeddings for semantic retrieval
+- **Groq** – LLM inference engine
+- **Cohere** – Reranking model for retrieval optimization
+- **LangChain** – Prompt orchestration and memory integration
+
+## Retrieval & Knowledge Infrastructure
+- **Pinecone** – Vector database for semantic search
+- **BM25 Encoder** – Sparse retrieval for hybrid search
+- **Parent–Child Chunking Model** – Hierarchical document structuring
+
+## Caching & Memory
+- **Redis** – Semantic cache and session memory backend
+
+## Security & Access Control
+- **JWT Authentication** – Secure user authentication
+- **Role-Based Access Control (RBAC)** – Fine-grained permission management
+- **Role-Isolated Semantic Caching** – Secure caching with role separation
+
+## Evaluation & Benchmarking
+- **Python Evaluation Scripts** – Custom assessment tools
+- **Jupyter Notebooks** – Analysis and experimentation
+- **Automated Benchmarking Pipelines** – Continuous performance monitoring
+
+## DevOps & Deployment
+- **Docker** – Containerization
+- **Azure App Service** – Cloud deployment platform
+- **GitHub Actions** – CI/CD pipeline automation
+
+## Configuration & Secrets
+- **Environment Variables** – Runtime configuration
+- **Cloud Secret Injection** – Secure credential management
+
+
+# Running Locally
+
+This section explains how to run the system in a local development environment for testing, development, and evaluation.
+
+---
+
+## Prerequisites
+Ensure the following are installed:
+- **Python 3.9+**
+- **pip**
+- **Redis** (local instance or cloud Redis)
+- **Access to required API services:**
+  - OpenAI
+  - Groq
+  - Pinecone
+  - Cohere
+
+## Step 1: Clone the Repository
+```bash
+git clone https://github.com/Tanish-analyst/enterprise-internal-hr-knowledge-rag.git
+cd enterprise-internal-hr-knowledge-rag
+```
+### Step 2: Create Virtual Environment
+```bash
+python -m venv venv
+source venv/bin/activate   # Linux/Mac
+venv\Scripts\activate      # Windows
+```
+
+### Step 3: Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Configure Environment Variables
+Create a .env file in the root directory:
+```bash
+# Security
+SECRET_KEY=
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+
+# AI Services
+OPENAI_API_KEY=
+GROQ_API_KEY=
+COHERE_API_KEY=
+
+# Retrieval
+PINECONE_API_KEY=
+PINECONE_INDEX=multi-rag-system
+
+# Cache
+REDIS_HOST=
+REDIS_PORT=6379
+REDIS_USERNAME=
+REDIS_PASSWORD
+```
+
+### Step 5: Run the Application
+``` bash
+uvicorn main:app --reload
+```
+### Step 6: Access the API
+- **API Base URL:**  
+  `http://127.0.0.1:8000`
+- **Interactive API Docs:**  
+  `http://127.0.0.1:8000/docs`
+
+
+
+#### Test User Credentials
+For local testing and evaluation, user accounts are preloaded from: `data/users.xlsx`
+
+This file contains 4000+ registered internal users with assigned roles:
+- `employee`
+- `manager`
+- `hr`
+
+  ---
+
+#### Password Pattern (Testing Only)
+For test users, the password format follows a deterministic pattern:
+
+**Format:**
+- **email:** `user<id>@company.com`
+- **password:** `user<id>pass`
+
+This pattern is used only for local testing and development.
+
+# Deployment 
+The system is designed for production-grade deployment using a containerized, cloud-native architecture.
+**Core Characteristics:**
+- Docker-based containerization
+- Cloud-native deployment model
+- Stateless API architecture
+- Externalized configuration & secrets
+- Secure secret injection
+- CI/CD automation
+- Infrastructure independence
+
+**Cloud Model:**
+- Containerized FastAPI service
+- Cloud-managed runtime (Azure App Service)
+- External AI services
+- External vector database
+- External cache backend
+
+
+
 
