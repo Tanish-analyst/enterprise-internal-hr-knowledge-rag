@@ -5,7 +5,6 @@
 A production-grade, secure, role-based Retrieval-Augmented Generation (RAG) platform for internal enterprise knowledge systems. Features include RBAC enforcement, semantic caching, parent–child document retrieval, evaluation pipelines, and cloud-native deployment on Azure.
 
 ---
-
 ## Problem Statement
 
 Modern enterprises store vast internal knowledge (HR policies, payroll, compliance, guidelines, procedures) across fragmented systems such as PDFs, shared drives, portals, and repositories.
@@ -116,3 +115,4 @@ Multi-layer caching and session memory optimize performance and enable conversat
 ## Infrastructure Layer
 The system runs as a cloud-native, containerized service with secure configuration and secret management.
 
+![Architecture Diagram](./docs/HLD/diagrams/architecture_overview.png) 
