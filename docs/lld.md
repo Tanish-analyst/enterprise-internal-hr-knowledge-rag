@@ -9,10 +9,10 @@
 2. [Module-Level Design](#2-Module-Level-Design)  
 3. [Data Models & Schemas](#3-data-models--schemas)  
 4. [End-to-End Request Flow](#4-end-to-end-request-flow)  
-5. [Caching Strategy – Low-Level Design](#6-caching-strategy--low-level-design)  
-6. [Error Handling & Edge Cases](#7-error-handling--edge-cases)  
-7. [Evaluation & Benchmarking](#9-evaluation--benchmarking)  
-8. [Deployment Details](#10-deployment-details)
+5. [Caching Strategy – Low-Level Design](#5-caching-strategy--low-level-design)  
+6. [Error Handling & Edge Cases](#6-error-handling--edge-cases)  
+7. [Evaluation & Benchmarking](#7-evaluation--benchmarking)  
+8. [Deployment Details](#8-deployment-details)
 
 # 1. Introduction
 
@@ -1119,13 +1119,13 @@ question   = payload.question
 
 ---
 
-# 6. Caching Strategy – Low-Level Design
+# 5. Caching Strategy – Low-Level Design
 
 This section defines the caching architecture, data flow, and behavior of caching mechanisms used in the system.
 
 ---
 
-## 6.1 Cache Architecture Overview
+## 5.1 Cache Architecture Overview
 
 The caching layer consists of:
 
@@ -1135,7 +1135,7 @@ The caching layer consists of:
 
 ---
 
-## 6.2 Conversation Memory Cache
+## 5.2 Conversation Memory Cache
 
 **File:** `app/cache/memory.py`
 
@@ -1182,7 +1182,7 @@ The caching layer consists of:
 
 ---
 
-## 6.3 Semantic Cache
+## 5.3 Semantic Cache
 
 **File:** `app/cache/semantic_cache.py`
 
@@ -1244,7 +1244,7 @@ The caching layer consists of:
 
 ---
 
-## 6.4 Redis Backend Layer
+## 5.4 Redis Backend Layer
 
 **File:** `app/cache/redis_client.py`
 
@@ -1270,7 +1270,7 @@ The caching layer consists of:
 
 ---
 
-## 6.5 Cache Interaction Flow
+## 5.5 Cache Interaction Flow
 
 ```
 Request → Semantic Cache
@@ -1283,27 +1283,27 @@ Request → Semantic Cache
 
 ---
 
-## 6.6 Cache Consistency Model
+## 5.6 Cache Consistency Model
 
 * Conversation Memory → session-scoped
 * Semantic Cache → role-scoped
 
 ---
 
-## 6.7 Cache Scope
+## 5.7 Cache Scope
 
 * Conversation Memory → per session
 * Semantic Cache → per role
 
 ---
 
-# 7. Error Handling & Edge Cases
+# 6. Error Handling & Edge Cases
 
 This section defines system failure handling, exceptions, and abnormal conditions.
 
 ---
 
-## 7.1 Authentication Failures
+## 6.1 Authentication Failures
 
 ### Invalid Credentials
 
@@ -1337,7 +1337,7 @@ This section defines system failure handling, exceptions, and abnormal condition
 
 ---
 
-## 7.2 Authorization Failures (RBAC)
+## 6.2 Authorization Failures (RBAC)
 
 **Behavior:**
 
@@ -1352,7 +1352,7 @@ If no authorized data:
 
 ---
 
-## 7.3 Configuration Failures
+## 6.3 Configuration Failures
 
 ### Missing Clients
 
@@ -1367,7 +1367,7 @@ If no authorized data:
 
 ---
 
-## 7.4 Cache Failures
+## 6.4 Cache Failures
 
 ### Redis Unavailable
 
@@ -1387,7 +1387,7 @@ If no authorized data:
 
 ---
 
-## 7.5 Retrieval Failures
+## 6.5 Retrieval Failures
 
 ### Empty Retrieval
 
@@ -1406,7 +1406,7 @@ If no authorized data:
 
 ---
 
-## 7.6 Reranker Failures
+## 6.6 Reranker Failures
 
 ### Cohere API Failure
 
@@ -1417,7 +1417,7 @@ If no authorized data:
 
 ---
 
-## 7.7 Parent Store Failures
+## 6.7 Parent Store Failures
 
 ### Missing Parent Document
 
@@ -1429,7 +1429,7 @@ If no authorized data:
 
 ---
 
-## 7.8 LLM Failures
+## 6.8 LLM Failures
 
 ### LLM API Error
 
@@ -1440,7 +1440,7 @@ If no authorized data:
 
 ---
 
-## 7.9 Timeout Handling
+## 6.9 Timeout Handling
 
 ### External Service Timeout
 
@@ -1452,7 +1452,7 @@ If no authorized data:
 
 ---
 
-## 7.10 Partial Pipeline Failures
+## 6.10 Partial Pipeline Failures
 
 ### Non-Critical Failures
 
@@ -1468,7 +1468,7 @@ If no authorized data:
 
 ---
 
-## 7.11 Graceful Degradation Model
+## 6.11 Graceful Degradation Model
 
 * Redis down → caching disabled
 * BM25 fails → dense only
@@ -1477,7 +1477,7 @@ If no authorized data:
 
 ---
 
-## 7.12 Failure Isolation Model
+## 6.12 Failure Isolation Model
 
 * Cache failure ≠ pipeline failure
 * Memory failure ≠ pipeline failure
@@ -1485,7 +1485,7 @@ If no authorized data:
 
 Failures are isolated to individual components.
 
-# 9. Evaluation & Benchmarking
+# 7. Evaluation & Benchmarking
 
 This section defines how the system is tested, measured, and validated using automated evaluation pipelines and structured datasets.
 
@@ -1493,7 +1493,7 @@ The evaluation framework ensures the system is measurable, verifiable, and audit
 
 ---
 
-## 9.1 Evaluation Architecture
+## 7.1 Evaluation Architecture
 
 Evaluation is implemented as a separate subsystem with three layers:
 
@@ -1503,7 +1503,7 @@ Evaluation is implemented as a separate subsystem with three layers:
 
 ---
 
-## 9.2 Test Data Layer
+## 7.2 Test Data Layer
 
 **Directory:** `eval_data/`
 
@@ -1523,7 +1523,7 @@ Evaluation is implemented as a separate subsystem with three layers:
 
 ---
 
-## 9.3 Execution Layer
+## 7.3 Execution Layer
 
 **Directory:** `eval_scripts/`
 
@@ -1551,7 +1551,7 @@ Each script:
 
 ---
 
-## 9.4 Latency Evaluation
+## 7.4 Latency Evaluation
 
 ### Files
 
@@ -1576,7 +1576,7 @@ Each script:
 
 ---
 
-## 9.5 Retrieval Evaluation
+## 7.5 Retrieval Evaluation
 
 ### Files
 
@@ -1593,7 +1593,7 @@ Each script:
 
 ---
 
-## 9.6 RBAC Evaluation
+## 7.6 RBAC Evaluation
 
 ### Files
 
@@ -1610,7 +1610,7 @@ Each script:
 
 ---
 
-## 9.7 Generation Quality Evaluation
+## 7.7 Generation Quality Evaluation
 
 ### Files
 
@@ -1628,7 +1628,7 @@ Each script:
 
 ---
 
-## 9.8 Analysis Layer
+## 7.8 Analysis Layer
 
 **Directory:** `evaluation/`
 
@@ -1651,7 +1651,7 @@ Each script:
 
 ---
 
-## 9.9 Metrics Consolidation
+## 7.9 Metrics Consolidation
 
 **File:** `metrics_summary.md`
 
@@ -1665,7 +1665,7 @@ Each script:
 
 ---
 
-## 9.10 Benchmarking Model
+## 7.10 Benchmarking Model
 
 * Offline datasets
 * Automated scripts
@@ -1677,7 +1677,7 @@ Each script:
 
 ---
 
-## 9.11 Evaluation Characteristics
+## 7.11 Evaluation Characteristics
 
 * Repeatable
 * Automated
@@ -1687,7 +1687,7 @@ Each script:
 * Regression-test capable
 
 
-# 10. Deployment Details
+# 8. Deployment Details
 
 This section defines how the system is built, configured, deployed, and executed in production environments.
 
@@ -1695,7 +1695,7 @@ It describes the deployment model, environment handling, secret management, runt
 
 ---
 
-## 10.1 Docker Deployment
+## 8.1 Docker Deployment
 
 **Source:** Dockerfile
 
@@ -1720,7 +1720,7 @@ It describes the deployment model, environment handling, secret management, runt
 
 ---
 
-## 10.2 Azure Deployment
+## 8.2 Azure Deployment
 
 ### Platform
 
@@ -1738,7 +1738,7 @@ It describes the deployment model, environment handling, secret management, runt
 
 ---
 
-## 10.3 Environment Handling
+## 8.3 Environment Handling
 
 ### Configuration Source
 
@@ -1752,7 +1752,7 @@ It describes the deployment model, environment handling, secret management, runt
 
 ---
 
-## 10.4 Secret Injection
+## 8.4 Secret Injection
 
 ### Secrets Managed
 
@@ -1772,7 +1772,7 @@ It describes the deployment model, environment handling, secret management, runt
 
 ---
 
-## 10.5 Runtime Model
+## 8.5 Runtime Model
 
 ### Execution Model
 
@@ -1791,7 +1791,7 @@ It describes the deployment model, environment handling, secret management, runt
 
 ---
 
-## 10.6 CI/CD Workflow Overview
+## 8.6 CI/CD Workflow Overview
 
 **Source:** `.github/workflows/docker-build.yml`
 
@@ -1812,7 +1812,7 @@ It describes the deployment model, environment handling, secret management, runt
 
 ---
 
-## 10.7 Deployment Characteristics
+## 8.7 Deployment Characteristics
 
 * Containerized service
 * Cloud-native deployment
