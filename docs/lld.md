@@ -102,8 +102,10 @@ This document is primarily intended for:
 - Business rules and HR policies  
 - Organizational workflows  
 - Raw document ingestion pipelines
-- 
-## 2. Module-Level Design
+
+
+# 2. Module-Level Design
+
 ## 2.1 Application Entry Module
 
 **File:** `app/main.py`
