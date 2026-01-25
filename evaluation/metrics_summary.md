@@ -18,9 +18,9 @@ This document summarizes the complete evaluation of the **Enterprise Internal Kn
 
 **Interpretation:**
 
-* High **Recall@K** indicates the system consistently retrieves the correct document in top results.
-* Lower Precision is expected due to multi-chunk retrieval per document (enterprise-style chunking).
-* Strong **MRR** confirms relevant chunks are ranked near the top.
+- High **Recall@K** indicates the system consistently retrieves the correct document in top results.
+- Lower Precision is expected due to multi-chunk retrieval per document (enterprise-style chunking).
+- Strong **MRR** confirms relevant chunks are ranked near the top.
 
 ---
 
@@ -37,30 +37,114 @@ This document summarizes the complete evaluation of the **Enterprise Internal Kn
 
 **Interpretation:**
 
-* High faithfulness confirms minimal hallucination.
-* Strong relevance score indicates accurate alignment with user intent.
+- High faithfulness confirms minimal hallucination.
+- Strong relevance score indicates accurate alignment with user intent.
 
 ---
 
-## 3️⃣ End-to-End Latency
+## 3️⃣ System Latency Evaluation (End-to-End Pipeline)
+
+> **Note:** All values represent **system latency** (full RAG pipeline execution), not isolated model inference.
 
 **Evaluation records:** 60 requests
 
-| Percentile | Latency   |
-| ---------- | --------- |
-| P50        | **0.36s** |
-| P95        | **0.71s** |
-| P99        | **1.02s** |
+### 🔹 Total System Latency (seconds)
 
-**Interpretation:**
-
-* Sub-second median latency.
-* P99 under ~1.1s ensures stable performance under load.
-* Suitable for real-time production usage.
+| Percentile | Latency |
+|------------|---------|
+| P50        | **1.52s** |
+| P95        | **2.52s** |
+| P99        | **3.96s** |
+| AVG        | **1.69s** |
 
 ---
 
-## 4️⃣ RBAC Security Evaluation
+### 🔹 Embedding Latency (s)
+
+| Percentile | Latency |
+|------------|---------|
+| P50        | **0.23s** |
+| P95        | **0.62s** |
+| P99        | **2.03s** |
+| AVG        | **0.32s** |
+
+---
+
+### 🔹 Retrieval Latency (s)
+
+| Percentile | Latency |
+|------------|---------|
+| P50        | **0.14s** |
+| P95        | **0.46s** |
+| P99        | **0.50s** |
+| AVG        | **0.18s** |
+
+---
+
+### 🔹 Reranker Latency (s)
+
+| Percentile | Latency |
+|------------|---------|
+| P50        | **0.09s** |
+| P95        | **0.31s** |
+| P99        | **1.04s** |
+| AVG        | **0.13s** |
+
+---
+
+### 🔹 LLM Latency (s)
+
+| Percentile | Latency |
+|------------|---------|
+| P50        | **0.74s** |
+| P95        | **1.31s** |
+| P99        | **1.65s** |
+
+---
+
+**Interpretation:**
+
+- Latency is distributed across embedding, retrieval, reranking, and generation stages.
+- Predictable P95 and P99 confirm **stable system performance under load**.
+- Architecture is suitable for **real-time enterprise RAG usage**.
+- Bottlenecks are primarily in **LLM generation and reranking**, which is expected in multi-stage RAG pipelines.
+
+---
+
+## 4️⃣ Cost Per Query Evaluation (USD)
+
+### 🔹 Cost Per Query Distribution
+
+| Percentile | Cost (USD) |
+|------------|------------|
+| P50        | **$0.00147** |
+| P95        | **$0.00169** |
+| P99        | **$0.00174** |
+| AVG        | **$0.00146** |
+
+---
+
+### 🔹 Cost Breakdown (AVG per query)
+
+| Component  | Cost (USD) |
+|------------|------------|
+| Embedding  | **$0.00000** |
+| LLM Input  | **$0.00039** |
+| LLM Output | **$0.00007** |
+| Reranker   | **$0.00100** |
+
+---
+
+**Interpretation:**
+
+- Ultra-low per-query cost suitable for **high-volume enterprise workloads**.
+- Reranker is the dominant cost driver (quality optimization tradeoff).
+- Cost-efficient architecture for **scalable internal knowledge systems**.
+- Enables deployment without heavy infrastructure cost pressure.
+
+---
+
+## 5️⃣ RBAC Security Evaluation
 
 **Evaluation records:** 297 attack scenarios
 
@@ -78,26 +162,27 @@ This document summarizes the complete evaluation of the **Enterprise Internal Kn
 
 **Interpretation:**
 
-* Strong role-based access control enforcement.
-* No privilege escalation or data leakage observed.
+- Strong role-based access control enforcement.
+- No privilege escalation or data leakage observed.
 
 ---
 
 ## 🏁 Final Verdict
 
-✔ Production-grade retrieval accuracy
-✔ High answer quality & faithfulness
-✔ Low-latency real-time performance
-✔ Zero security violations
+✔ Production-grade retrieval accuracy  
+✔ High answer quality & faithfulness  
+✔ Predictable system-level latency  
+✔ Ultra-low operational cost per query  
+✔ Zero security violations  
 
-This system demonstrates **enterprise-ready RAG architecture** with robust evaluation across retrieval, generation, performance, and security dimensions.
+This system demonstrates **enterprise-ready RAG architecture** with robust evaluation across retrieval, generation, performance, security, latency, and cost dimensions.
 
 ---
 
 ## 🔗 Reproducibility
 
-* All evaluations can be reproduced using notebooks inside `/evaluation/`.
-* Datasets used are stored in `/eval_data/`.
+- All evaluations can be reproduced using notebooks inside `/evaluation/`.
+- Datasets used are stored in `/eval_data/`.
 
 ---
 
