@@ -536,3 +536,130 @@ This ensures the LLM output is:
 ✅ **Role-safe**  
 ✅ **Context-aware**
 
+## 3. Data Models & Schemas
+
+This section defines the actual data structures used in the system. It documents how data is represented, stored, transferred, and processed across different modules.
+
+### 3.1 Query Request Model
+
+**Source:** `app/models/query.py`
+
+**Purpose**
+
+Represents the user input sent to the RAG system.
+
+**Structure**
+
+Query:
+{
+  "question": "string"
+}
+
+**Explanation:**
+
+Used for user authentication. The user provides email and password, which are validated against the internal user database.
+
+**Token Response Model**
+
+TokenResponse:
+{
+  "access_token": "string",
+  "token_type": "bearer",
+  "role": "string"
+}
+
+**Explanation:**
+
+After successful login:
+
+- **access_token** → JWT token for authentication
+- **token_type** → always `bearer`
+- **role** → user role (`employee`, `hr`, `manager`)
+
+This token is used for all protected API calls.
+
+### 3.3 API Response Structure
+
+**Source:** `app/rag/routes.py`
+
+**Basic Response (`/ask`)**
+
+{
+  "answer": "string"
+}
+
+**Explanation:**
+
+Returns only the generated answer when metrics are not requested.
+
+**Extended Response (`/ask_with_metrics`)**
+
+```json
+{
+  "answer": "string",
+  "latency": {
+    "total": number,
+    "embedding": number,
+    "retrieval": number,
+    "reranker": number,
+    "llm": number
+  },
+  "usage": {
+    "embedding_tokens": number,
+    "llm_input_tokens": number,
+    "llm_output_tokens": number,
+    "reranker_calls": number
+  },
+  "cache": {
+    "semantic_cache_hit": boolean
+  }
+}
+
+**Explanation:**
+
+This structure provides:
+
+- AI-generated answer
+- Detailed latency breakdown
+- Token usage information
+- Cache hit/miss information
+
+This is used for evaluation and performance analysis.
+
+### 3.4 User Data Structure
+
+**Source:** `app/auth/users.py`
+
+**Internal User Object**
+
+
+{
+  "user_id": "number | string",
+  "email": "string",
+  "hashed_password": "string",
+  "role": "string",
+  "status": "string"
+}
+
+**Explanation:**
+This structure represents users loaded from users.xlsx and stored in memory.
+It is used for authentication, authorization, and RBAC enforcement.
+
+### 3.5.1 Child Chunk Structure (Pinecone Vector Store)
+
+Each vector stored in Pinecone represents a child chunk of a document.
+
+**Structure Example:**
+
+```json
+child_chunk = {
+  "id": "string",
+  "child_id": "string",
+  "text": "string",
+  "parent_id": "string",
+  "category": "string",
+  "source": "string",
+  "employee": boolean,
+  "hr": boolean,
+  "manager": boolean
+}
