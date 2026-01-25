@@ -107,7 +107,7 @@ The system follows a layered service architecture with clear separation across A
 - Deployment: Docker, Azure App Service
 
 ### Architecture Diagram
-> (Insert layered architecture diagram here)
+![Architecture Diagram](./diagrams/architecture_overview.png)
 
 ---
 
