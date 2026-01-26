@@ -60,7 +60,7 @@ The platform supports multi-turn conversational interactions, delivers low-laten
 
 ---
 
-## 🚀 Key Capabilities
+# Key Capabilities
 
 ### 🔐 Secure Internal Knowledge Access
 - Controlled, authenticated access to internal organizational documents  
@@ -191,7 +191,7 @@ Enterprise-grade system design with:
 
 ✨ *Designed as an enterprise-grade, production-ready internal knowledge intelligence system — not just a chatbot.*
 
-# 🏗️ System Architecture (High-Level)
+# System Architecture (High-Level)
 
 The system is designed as a **secure, layered enterprise platform** for internal knowledge access, intelligence, and controlled information delivery.
 
