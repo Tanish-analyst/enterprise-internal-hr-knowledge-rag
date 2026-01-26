@@ -1,8 +1,11 @@
 # SentinelRAG
 **Enterprise-Grade Secure Knowledge Intelligence Platform**
 
+## Short Description
+A production-grade, secure, role-based Retrieval-Augmented Generation (RAG) platform for internal enterprise knowledge systems. Features include RBAC enforcement, semantic caching, parent–child document retrieval, evaluation pipelines, and cloud-native deployment on Azure.
+
+
 ## Table of Contents
-- [Short Description](#short-description)
 - [Problem Statement](#problem-statement)
 - [Solution Overview](#solution-overview)
 - [Key Capabilities](#key-capabilities)
@@ -13,8 +16,6 @@
 - [Project Structure](#project-structure)
 - [Running Locally](#running-locally)
 - [Deployment](#deployment)
-## Short Description
-A production-grade, secure, role-based Retrieval-Augmented Generation (RAG) platform for internal enterprise knowledge systems. Features include RBAC enforcement, semantic caching, parent–child document retrieval, evaluation pipelines, and cloud-native deployment on Azure.
 
 ---
 ## Problem Statement
@@ -59,118 +60,380 @@ The platform supports multi-turn conversational interactions, delivers low-laten
 
 ---
 
-## Key Capabilities
+## 🚀 Key Capabilities
 
-### Secure Internal Knowledge Access
-Provides controlled, authenticated access to internal organizational documents through a protected API layer.
-
-### Role-Based Access Control (RBAC)
-Enforces strict role-level access (employee, manager, HR) at the data, retrieval, cache, and response layers to prevent unauthorized information exposure.
-
-### Semantic Knowledge Retrieval
-Uses embedding-based retrieval to understand user intent and meaning, delivering accurate and relevant results beyond keyword search.
-
-### Hybrid Retrieval Architecture
-Combines dense vector search with sparse retrieval for improved recall and precision in document matching.
-
-### Hierarchical Document Structure
-Implements parent–child document modeling to preserve document structure and improve contextual coherence in answers.
-
-### Context-Aware Conversational Memory
-Supports multi-turn interactions using session memory and summarization for natural conversational access to internal knowledge.
-
-### Role-Isolated Semantic Caching
-Accelerates repeated queries through role-scoped semantic caching while maintaining strict data isolation between user roles.
-
-### Enterprise-Grade Security Model
-Integrates JWT authentication, RBAC enforcement, role-based filtering, and secure secret handling for production environments.
-
-### Performance-Optimized Pipeline
-Uses multi-layer caching, retrieval optimization, and threshold-based reranking to reduce latency and resource consumption.
-
-### Evaluation & Benchmarking Framework
-Includes built-in pipelines for latency measurement, retrieval evaluation, RBAC validation, and generation quality assessment.
-
-### Cloud-Native Deployment
-Designed for containerized deployment with cloud-native configuration and secure secret injection.
-
-### Production-Ready Architecture
-Built with modular components, fault tolerance, graceful degradation, and enterprise deployment practices.
-
-# System Architecture (High-Level)
-
-The system is designed as a secure, layered enterprise platform for internal knowledge access and intelligence.
-
-At a high level, the architecture consists of the following logical layers:
-
-## Client Layer
-Internal users and applications interact with the system through a secure API interface.
-
-## Secure API Layer
-A protected FastAPI backend handles all incoming requests, authentication, and request validation.
-
-## Identity & Access Layer
-JWT-based authentication and role-based access control ensure that users can only access authorized knowledge.
-
-## Knowledge Retrieval Layer
-Internal documents are accessed through semantic and hybrid retrieval mechanisms, enabling intelligent knowledge discovery.
-
-## Knowledge Structuring Layer
-Parent–child document modeling preserves document hierarchy and ensures coherent context construction.
-
-## AI Intelligence Layer
-Retrieved knowledge is processed by AI models to generate grounded, context-aware responses.
-
-## Caching & Memory Layer
-Multi-layer caching and session memory optimize performance and enable conversational interaction.
-
-## Infrastructure Layer
-The system runs as a cloud-native, containerized service with secure configuration and secret management.
-
-![Architecture Diagram](./docs/HLD/diagrams/architecture_overview.png) 
-
-# Security Model
-
-**Security is a core design principle of the system, not an afterthought.**
-
-The platform is built to ensure that internal organizational knowledge is accessed only by authorized users, under strictly controlled conditions.
+### 🔐 Secure Internal Knowledge Access
+- Controlled, authenticated access to internal organizational documents  
+- Protected API layer with secure authorization flow  
+- Enterprise-grade access isolation
 
 ---
 
-## Authentication
-- **JWT-based Authentication**: The system uses JWT-based authentication for all protected API endpoints.
-- **Organizational Credentials**: Users authenticate using valid organizational credentials.
-- **Bearer Token Requirement**: Every request to the system requires a valid bearer token.
+### 🧭 Role-Based Access Control (RBAC)
+Strict role enforcement across the entire pipeline:
+- **Data layer**
+- **Retrieval layer**
+- **Cache layer**
+- **Response generation layer**
 
-## Authorization (Role-Based Access Control)
-- **RBAC Enforcement**: The system enforces role-based access control (RBAC) across all layers.
-- **User Role Definitions**: User roles (employee, manager, HR) define access permissions.
-- **Data-Level Control**: Access control is enforced at the data level, not just at the API level.
+**Roles supported:**  
+- Employee  
+- Manager  
+- HR  
 
-## Data-Level Role Isolation
-- **Role-Access Tagging**: Internal documents are tagged with role-access flags.
-- **Role-Based Filtering**: Retrieval operations filter knowledge based on user role.
-- **Unauthorized Content Prevention**: Unauthorized documents are never retrieved, processed, cached, or sent to AI models.
+➡ Prevents unauthorized access and information leakage end-to-end.
 
-## Secure Knowledge Access
-- **Authorized Content Only**: Only authorized internal knowledge is used for answer generation.
-- **Grounded Responses**: AI responses are grounded strictly in permitted internal content.
-- **No External Sources**: No external knowledge sources are used.
+---
 
-## Secure Configuration Management
-- **No In-Code Secrets**: Secrets and API keys are never stored in code.
-- **Secure Injection**: All credentials are injected through secure environment variables.
-- **Cloud-Native Management**: Cloud-native secret management is used in production environments.
+### 🧠 Semantic Knowledge Retrieval
+- Embedding-based semantic search
+- Intent understanding beyond keyword matching
+- Context-aware information discovery
+- High-precision, relevance-driven responses
 
-## Cache Security
-- **Role-Isolated Semantic Cache**: Semantic cache is role-isolated, preventing cross-role data leakage.
-- **Session-Scoped Memory**: Session memory is scoped per user session.
-- **Consistent Access Control**: Cached data respects the same access control rules as live retrieval.
+---
 
-## Infrastructure Security
-- **Containerized Deployment**: Containerized deployment ensures environment isolation.
-- **Cloud-Managed Security**: Cloud-managed services handle secure networking and runtime protection.
-- **Restricted External Access**: External service access is restricted to required APIs only.
+### 🔀 Hybrid Retrieval Architecture
+Combination of:
+- **Dense vector search** (semantic similarity)
+- **Sparse retrieval** (keyword precision)
+
+➡ Improved recall, precision, and result quality.
+
+---
+
+### 🧱 Hierarchical Document Modeling
+- Parent–child document structure
+- Context preservation
+- Structural coherence
+- Logical segmentation of knowledge
+
+➡ Better contextual grounding and answer accuracy.
+
+---
+
+### 💬 Context-Aware Conversational Memory
+Supports natural multi-turn conversations using:
+- Session memory
+- Query summarization
+- Context condensation
+- Conversation state tracking
+
+➡ Human-like internal knowledge interaction.
+
+---
+
+### ⚡ Role-Isolated Semantic Caching
+High-performance caching with:
+- Role-scoped cache keys
+- Semantic similarity matching
+- Cross-role data isolation
+- Zero data leakage guarantee
+
+➡ Faster responses + strict security.
+
+---
+
+### 🛡️ Enterprise-Grade Security Model
+Security-first architecture including:
+- JWT authentication
+- RBAC enforcement
+- Role-based filtering
+- Secure secret management
+- Token-based authorization
+- API protection layers
+
+---
+
+### 🚄 Performance-Optimized Pipeline
+Latency-optimized system using:
+- Multi-layer caching
+- Retrieval optimization
+- Threshold-based reranking
+- Resource-aware processing
+- Query filtering pipelines
+
+➡ Fast, scalable, and cost-efficient performance.
+
+---
+
+### 📊 Evaluation & Benchmarking Framework
+Built-in evaluation pipelines for:
+- Latency measurement
+- Retrieval accuracy
+- RBAC validation
+- Security testing
+- Response quality assessment
+- Generation reliability
+
+---
+
+### ☁️ Cloud-Native Deployment
+Designed for modern infrastructure:
+- Containerized architecture
+- Environment-based configuration
+- Secure secret injection
+- Cloud portability
+- CI/CD compatibility
+
+---
+
+### 🏗️ Production-Ready Architecture
+Enterprise-grade system design with:
+- Modular components
+- Fault tolerance
+- Graceful degradation
+- Scalable services
+- Clean separation of concerns
+- Industry-grade deployment practices
+
+---
+
+✨ *Designed as an enterprise-grade, production-ready internal knowledge intelligence system — not just a chatbot.*
+
+# 🏗️ System Architecture (High-Level)
+
+The system is designed as a **secure, layered enterprise platform** for internal knowledge access, intelligence, and controlled information delivery.
+
+<details>
+<summary><strong>📊 View System Architecture Diagram</strong></summary>
+
+<br>
+
+<p align="center">
+  <img src="./docs/HLD/diagrams/architecture_overview.png" alt="Architecture Diagram" width="900"/>
+</p>
+
+</details> 
+At a high level, the architecture is composed of the following logical layers:
+
+---
+
+## 👤 Client Layer
+- Internal users  
+- Internal applications  
+- Admin tools  
+- Enterprise services  
+
+➡ All interactions occur through a secure API interface.
+
+---
+
+## 🔐 Secure API Layer
+- Protected **FastAPI backend**
+- Central request entry point
+- Authentication handling
+- Request validation
+- Authorization enforcement
+- API security controls
+
+➡ Acts as the secure gateway to the entire system.
+
+---
+
+## 🆔 Identity & Access Layer
+Security and access governance layer providing:
+- JWT-based authentication
+- Role-based access control (RBAC)
+- Role validation
+- Permission enforcement
+- Access policy management
+
+➡ Ensures users only access **authorized knowledge**.
+
+---
+
+## 📚 Knowledge Retrieval Layer
+Intelligent knowledge access through:
+- Semantic retrieval (vector embeddings)
+- Hybrid search (dense + sparse)
+- Intent understanding
+- Relevance scoring
+- Retrieval filtering
+
+➡ Enables accurate and intelligent knowledge discovery.
+
+---
+
+## 🧱 Knowledge Structuring Layer
+Document organization and context modeling using:
+- Parent–child document hierarchy
+- Structural segmentation
+- Context boundaries
+- Logical document grouping
+- Hierarchical indexing
+
+➡ Preserves document structure and contextual integrity.
+
+---
+
+## 🧠 AI Intelligence Layer
+AI-driven reasoning and response generation:
+- Context grounding
+- Knowledge synthesis
+- Hallucination control
+- Answer coherence
+- Context-aware generation
+
+➡ Produces reliable, grounded, and accurate responses.
+
+---
+
+## ⚡ Caching & Memory Layer
+Performance and conversation optimization via:
+- Multi-layer caching
+- Semantic cache
+- Role-isolated cache
+- Session memory
+- Conversational state tracking
+- Query summarization
+
+➡ Enables fast responses and natural conversations.
+
+---
+
+## ☁️ Infrastructure Layer
+Cloud-native operational foundation:
+- Containerized deployment
+- Secure configuration management
+- Secret injection
+- Environment isolation
+- Scalable services
+- CI/CD compatibility
+
+➡ Production-grade, enterprise-ready infrastructure.
+
+---
+
+✨ *Architected as a secure, scalable, intelligent enterprise knowledge platform — not just a RAG system, but a full internal knowledge intelligence infrastructure.*
+
+
+
+
+# Security Model
+
+**Security is a core design principle of the system — not an afterthought.**
+
+The platform is architected to ensure that internal organizational knowledge is accessed **only by authorized users**, under **strictly controlled, auditable, and enforceable conditions**.
+
+---
+
+## 🔑 Authentication
+- **JWT-based Authentication**  
+  - All protected API endpoints require JWT authentication  
+  - Token-based session validation  
+
+- **Organizational Credentials**  
+  - Users authenticate using valid internal organizational credentials  
+
+- **Bearer Token Enforcement**  
+  - Every request must include a valid bearer token  
+  - Unauthorized requests are automatically rejected  
+
+---
+
+## 🧭 Authorization (Role-Based Access Control – RBAC)
+- **System-Wide RBAC Enforcement**  
+  - RBAC is applied across **all layers**, not just APIs  
+
+- **User Role Definitions**  
+  - Roles supported:
+    - `employee`  
+    - `manager`  
+    - `HR`  
+
+- **Data-Level Authorization**  
+  - Access control is enforced at the **data level**, not just at the interface level  
+
+➡ Security is embedded in the data flow itself, not bolted on top.
+
+---
+
+## 🧱 Data-Level Role Isolation
+- **Role-Access Tagging**  
+  - Internal documents are tagged with role-based access metadata  
+
+- **Role-Based Retrieval Filtering**  
+  - Retrieval pipelines filter knowledge strictly by user role  
+
+- **Unauthorized Content Prevention**  
+  - Unauthorized documents are:
+    - ❌ Never retrieved  
+    - ❌ Never processed  
+    - ❌ Never cached  
+    - ❌ Never sent to AI models  
+    - ❌ Never included in responses  
+
+➡ Unauthorized data is structurally unreachable.
+
+---
+
+## 📚 Secure Knowledge Access
+- **Authorized Content Only**  
+  - Only permitted internal knowledge is used for answer generation  
+
+- **Grounded AI Responses**  
+  - All responses are grounded in authorized internal content  
+
+- **No External Data Sources**  
+  - No external APIs or public knowledge bases are used  
+
+➡ Prevents hallucination, leakage, and data contamination.
+
+---
+
+## 🔒 Secure Configuration Management
+- **No In-Code Secrets**  
+  - No API keys, secrets, or credentials in source code  
+
+- **Secure Secret Injection**  
+  - Secrets injected via environment variables  
+
+- **Cloud-Native Secret Management**  
+  - Production uses cloud-native secret management systems  
+
+➡ Zero hardcoded secrets policy.
+
+---
+
+## ⚡ Cache Security
+- **Role-Isolated Semantic Cache**  
+  - Cache keys are scoped by role  
+  - Prevents cross-role data leakage  
+
+- **Session-Scoped Memory**  
+  - Memory is isolated per user session  
+
+- **Consistent Access Control**  
+  - Cached data follows the same RBAC rules as live retrieval  
+
+➡ Cache layer is security-aware, not just performance-focused.
+
+---
+
+## ☁️ Infrastructure Security
+- **Containerized Deployment**  
+  - Environment isolation via containerization  
+
+- **Cloud-Managed Security**  
+  - Secure networking  
+  - Runtime protection  
+  - Managed infrastructure security services  
+
+- **Restricted External Access**  
+  - External service access limited strictly to required APIs  
+
+➡ Production-grade infrastructure security model.
+
+---
+
+🛡️ **Security Philosophy**
+
+> Security is enforced by **architecture**, not policy documents.  
+> Unauthorized data is **structurally impossible to access**, not just logically restricted.
+
+✨ *Designed as a zero-trust, enterprise-grade internal knowledge security architecture.*
+
 
 ---
 
