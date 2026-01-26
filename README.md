@@ -9,7 +9,7 @@ A production-grade, secure, role-based Retrieval-Augmented Generation (RAG) plat
 - [Problem Statement](#problem-statement)
 - [Solution Overview](#solution-overview)
 - [Key Capabilities](#key-capabilities)
-- [Project Value & Use Case](#-project-value--use-case)
+- [Project Value & Use Case](#project-value--use-case)
 - [System Architecture (High-Level)](#system-architecture-high-level)
 - [Security Model](#security-model)
 - [Evaluation & Benchmarking](#evaluation--benchmarking)
