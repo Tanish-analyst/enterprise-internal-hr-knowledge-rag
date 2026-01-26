@@ -543,7 +543,14 @@ The system is not only functional, but:
 
 The repository follows a modular, enterprise-oriented structure designed for scalability, maintainability, security, and clear separation of responsibilities:
 
-```plaintext
+# 📁 Project Structure
+
+<details>
+<summary><strong>📂 View Repository Structure</strong></summary>
+
+<br>
+
+```text
 enterprise-internal-hr-knowledge-rag-main/
 │
 ├── app/                             # Core application code
@@ -592,6 +599,28 @@ enterprise-internal-hr-knowledge-rag-main/
 │   ├── rbac_eval.ipynb
 │   └── metrics_summary.md
 │
+├── notebooks/                       # Experimental & offline notebooks
+│   └── multi_rag_pipeline.ipynb     # Ingestion pipeline Colab notebook
+│                                     # (Used for document loading, chunking,
+│                                     # hybrid encoding, embedding & vector DB ingestion)
+│
+├── ingestion/                       # Offline / batch ingestion pipeline
+│   ├── config.py                    # Ingestion-specific configuration
+│   ├── loader.py                    # Document loaders (PDF, DOCX, etc.)
+│   ├── preprocessor.py              # Cleaning & normalization logic
+│   ├── chunker.py                   # Text chunking strategies
+│   ├── embedder.py                  # Embedding generation
+│   ├── hybrid_encoder.py            # Sparse + dense encoding logic
+│   ├── vector_store.py              # Vector DB insertion & indexing
+│   └── pipeline.py                  # End-to-end ingestion orchestration
+│
+├── docs/                            # System documentation
+│   ├── HLD/                         # High-Level Design
+│   │   ├── hld.md                   # High-level system architecture
+│   │   └── diagrams/               # Architecture & flow diagrams
+│   │
+│   └── lld.md                       # Low-Level Design (component-level details)
+│
 ├── .github/workflows/               # CI/CD pipelines
 │   └── docker-build.yml
 │
@@ -601,7 +630,9 @@ enterprise-internal-hr-knowledge-rag-main/
 ├── requirements.txt                 # Python dependencies
 ├── main.py                          # Application entry point
 └── README.md                        # Project documentation
+
 ```
+</details> 
 
 # Running Locally
 
