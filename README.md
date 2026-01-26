@@ -9,6 +9,7 @@ A production-grade, secure, role-based Retrieval-Augmented Generation (RAG) plat
 - [Problem Statement](#problem-statement)
 - [Solution Overview](#solution-overview)
 - [Key Capabilities](#key-capabilities)
+- [Project Value & Use Case](#-project-value--use-case)
 - [System Architecture (High-Level)](#system-architecture-high-level)
 - [Security Model](#security-model)
 - [Evaluation & Benchmarking](#evaluation--benchmarking)
@@ -190,6 +191,18 @@ Enterprise-grade system design with:
 ---
 
 ✨ *Designed as an enterprise-grade, production-ready internal knowledge intelligence system — not just a chatbot.*
+
+# Project Value & Use Case
+
+This project demonstrates how an internal enterprise-grade AI system can:
+
+- Reduce manual document search effort
+- Improve internal knowledge accessibility
+- Enable fast employee onboarding
+- Reduce dependency on HR/helpdesk teams
+- Improve compliance knowledge discovery
+- Centralize organizational knowledge
+- Provide secure role-based information access
 
 # System Architecture (High-Level)
 
